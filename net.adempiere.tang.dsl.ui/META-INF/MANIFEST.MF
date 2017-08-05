@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: net.adempiere.tang.dsl.ui
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: net.adempiere.tang.dsl.ui; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: net.adempiere.tang.dsl,
+ net.adempiere.tang.dsl.ide,
+ org.eclipse.xtext.ui,
+ org.eclipse.xtext.ui.shared,
+ org.eclipse.xtext.ui.codetemplates.ui,
+ org.eclipse.ui.editors;bundle-version="3.5.0",
+ org.eclipse.ui.ide;bundle-version="3.5.0",
+ org.eclipse.ui,
+ org.eclipse.compare,
+ org.eclipse.xtext.builder,
+ org.eclipse.xtend.lib;resolution:=optional,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.xtext.common.types.ui,
+ org.eclipse.xtext.xbase.ui,
+ org.eclipse.jdt.debug.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources
+Import-Package: org.apache.log4j
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: net.adempiere.tang.dsl.ui.quickfix,
+ net.adempiere.tang.dsl.ui.internal,
+ net.adempiere.tang.dsl.ui.contentassist
+Bundle-Activator: net.adempiere.tang.dsl.ui.internal.DslActivator

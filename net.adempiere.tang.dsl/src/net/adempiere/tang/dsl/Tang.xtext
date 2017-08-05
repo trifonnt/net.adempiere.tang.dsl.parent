@@ -1,0 +1,293 @@
+grammar net.adempiere.tang.dsl.Tang with org.eclipse.xtext.common.Terminals
+//grammar net.adempiere.tang.dsl.Tang with org.eclipse.xtext.xbase.Xbase
+
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+generate tang "http://www.adempiere.net/tang/dsl/Tang"
+
+// *****************
+// *** Documentation
+// *** cardinalities (?= optional, *= any number, += at least once)
+// *****************
+
+/*
+ * TODO
+ * domain-name(vendor....: net.adempiere
+ * application-name......: product
+ * application-version...: 1.0.0
+ */
+
+TangModule:
+/*
+	tangTypes+=TangType*
+	tangDefaultValueCalculators+=TangDefaultValueCalculator*
+
+	tangEntities+=TangEntity*
+	tangEntityViews+=TangEntityView*
+*/
+//	(tangDefaultValueCalculatorList=TangDefaultValueCalculatorList)?
+//	(tangModelElements+=TangAbstractElement)*
+	(tangPackages+=TangPackageDeclaration)*
+;
+
+terminal LONG returns ecore::ELong: ('0'..'9')+ 'l';
+//@Override 
+//terminal INT returns ecore::EInt: ('0'..'9')+;
+
+TangPackageDeclaration:
+	'package' name=QualifiedName '{'
+		(imports+=TangImport)*
+		(defaultValueCalculatorList=TangDefaultValueCalculatorList)?
+		(elements+=TangAbstractElement)*
+	'}'
+;
+
+TangAbstractElement: // By this way order of Model.tangModelElements will not matter!
+//	TangPackageDeclaration
+	TangType // | TangDefaultValueCalculator 
+	| TangEntity | TangEntityViewNative | TangEntityView
+	| TangWindow
+;
+
+QualifiedName: // When importing grammar: org.eclipse.xtext.xbase.Xbase
+	ID ('.' ID)*
+//	ValidID ('.' ValidID)*
+;
+QualifiedNameWithWildcard: // When importing grammar: org.eclipse.xtext.xbase.Xbase
+	QualifiedName '.*'? // old: ?
+;
+TangImport:
+	'import' importedNamespace=QualifiedNameWithWildcard ';'
+;
+
+TangType:
+	BasicType | SubType
+;
+
+BasicType:
+	BasicStringType 
+	| BasicIntegerType | BasicLongType | BasicDecimalType 
+	| BasicBooleanType 
+	| BasicDateType | BasicDateTimeType
+;
+SubType:
+	SubStringType 
+	| SubIntegerType | SubLongType | SubDecimalType
+	| SubBooleanType 
+	| SubDateType | SubDateTimeType
+;
+
+
+BasicStringType:
+	'string-type' name=ID '{'
+		'java-type' '=' javaType=STRING
+		'max-length' '=' maxLength=INT 
+		(allowNull?='allow-null' '=' ('true' | 'false'))
+	'}'
+;
+SubStringType:
+	'sub-string-type' name=ID ('extends' superType=[BasicStringType|QualifiedName]) '{'
+		('max-length' '=' maxLength=INT)?
+		(allowNull?='allow-null' '=' ('true' | 'false'))?
+	'}'
+;
+
+BasicIntegerType:
+	'integer-type' name=ID '{'
+		'java-type' '=' javaType=STRING
+		'max-digits' '=' maxLength=INT 
+		(allowNull?='allow-null' '=' ('true' | 'false'))
+		('min-value' '=' minValue=INT)?
+		('max-value' '=' maxValue=INT)?
+	'}'
+;
+SubIntegerType:
+	'sub-integer-type' name=ID ('extends' superType=[BasicIntegerType|QualifiedName]) '{'
+		('max-digits' '=' maxDigits=INT)? 
+		(allowNull?='allow-null' '=' ('true' | 'false'))?
+		('min-value' '=' minValue=INT)?
+		('max-value' '=' maxValue=INT)?
+	'}'
+;
+
+BasicLongType:
+	'long-type' name=ID '{'
+		'java-type' '=' javaType=STRING
+		'max-digits' '=' maxLength=INT 
+		(allowNull?='allow-null' '=' ('true' | 'false'))
+		('min-value' '=' minValue=LONG)?
+		('max-value' '=' maxValue=LONG)?
+	'}'
+;
+SubLongType:
+	'sub-long-type' name=ID ('extends' superType=[BasicLongType|QualifiedName]) '{'
+		('max-digits' '=' maxDigits=INT)? 
+		(allowNull?='allow-null' '=' ('true' | 'false'))?
+		('min-value' '=' minValue=LONG)?
+		('max-value' '=' maxValue=LONG)?
+	'}'
+;
+
+BasicBooleanType:
+	'boolean-type' name=ID '{'
+		'java-type' '=' javaType=STRING
+		(allowNull?='allow-null' '=' ('true' | 'false'))
+	'}'
+;
+SubBooleanType:
+	'sub-boolean-type' name=ID ('extends' superType=[BasicBooleanType|QualifiedName]) '{'
+		(allowNull?='allow-null' '=' ('true' | 'false'))?
+	'}'
+;
+
+BasicDecimalType:
+	'decimal-type' name=ID '{'
+		'java-type' '=' javaType=STRING
+		'max-digits' '=' maxDigits=INT 
+		(allowNull?='allow-null' '=' ('true' | 'false'))
+		('min-value' '=' minValue=INT)?
+		('max-value' '=' maxValue=INT)?
+	'}'
+;
+SubDecimalType:
+	'sub-decimal-type' name=ID ('extends' superType=[BasicDecimalType|QualifiedName]) '{'
+		('max-digits' '=' maxDigits=INT)? 
+		(allowNull?='allow-null' '=' ('true' | 'false'))?
+		('min-value' '=' minValue=INT)?
+		('max-value' '=' maxValue=INT)?
+	'}'
+;
+
+BasicDateType:
+	'date-type' name=ID '{'
+		'java-type' '=' javaType=STRING
+		(allowNull?='allow-null' '=' ('true' | 'false'))
+	'}'
+;
+SubDateType:
+	'sub-date-type' name=ID ('extends' superType=[BasicDateType|QualifiedName]) '{'
+		(allowNull?='allow-null' '=' ('true' | 'false'))?
+	'}'
+;
+
+BasicDateTimeType:
+	'date-time-type' name=ID '{'
+		'java-type' '=' javaType=STRING
+		(allowNull?='allow-null' '=' ('true' | 'false'))
+	'}'
+;
+SubDateTimeType:
+	'sub-date-time-type' name=ID ('extends' superType=[BasicDateTimeType|QualifiedName]) '{'
+		(allowNull?='allow-null' '=' ('true' | 'false'))?
+	'}'
+;
+
+
+//------- Entities
+TangEntity:
+	'entity' name=ID 'db-table-name' '=' tableName=STRING ('extends' superEntity=[TangEntity|QualifiedName])? '{'
+		fields+=Field+
+		primaryKey=PrimaryKey
+		uniqueCombinations+=UniqueCombination*
+		tableIndexes+=DBTableIndex*
+	'}'
+;
+
+PrimaryKey:
+	'primary-key' name=ID '{'fields+=[Field] (',' fields+=[Field])* '}' // ]+ 1..MANY
+;
+
+UniqueCombination:
+	'unique-combination' name=ID '{'fields+=[Field] (',' fields+=[Field])* '}' // ]+ 1..MANY
+;
+
+DBTableIndex: // TODO: Specify type of DB Index.
+	'db-index' name=ID '{'fields+=[Field] (',' fields+=[Field])* '}' // ]+ 1..MANY
+;
+
+Field:
+//	fieldType=[TangType] name=ID
+	name=ID ':' fieldType=[TangType] 
+	'db-column-name' '=' columnName=STRING 
+	defaultCalculationMethod=DefaultCalculationMethod?
+	';'
+;
+
+DefaultCalculationMethod:
+	  ('default-value' '=' defaultValue=STRING)
+	| ('default-value-calculator' '=' defaultValueCalculator=[TangDefaultValueCalculator|QualifiedName])
+	| ('default-value-expression' '=' defaultValueExpression=STRING) // TODO: Change it to non String expression!
+;
+
+//------- Entity-view-native (Definition of View is maintained with SQL Code!!!)
+TangEntityViewNative:
+	'entity-view-native' name=ID 'db-view-name' '=' dbViewName=STRING '{'
+		'sql' '=' sql=STRING  // TODO - This is not good as we can't refactor SQL code!!!
+	'}'
+;
+
+
+//------- Entity-view
+TangEntityView:
+	'entity-view' name=ID 'db-view-name' '=' dbViewName=STRING '{'
+		'entities' '=' '{' entities+=EntityViewAlias (',' entities+=EntityViewAlias)* '}'
+//		'fields'   '=' '{' fields+=[Attribute|QualifiedName] (',' fields+=[Attribute|QualifiedName])* '}'
+		'fields'   '=' '{' fields+=EntityViewField (',' fields+=EntityViewField)* '}'
+	'}'
+;
+EntityViewAlias:
+	entity=[TangEntity] ('as'|'AS') name=ID
+;
+EntityViewField:
+	attribute=[Field|QualifiedName] ('as'|'AS') name=ID
+;
+
+//------- DefaultValueCalculatorList
+TangDefaultValueCalculatorList:
+	'default-value-calculators' '{'
+		defaultValueCalculators+=TangDefaultValueCalculator+
+	'}'
+;
+TangDefaultValueCalculator:
+	name=ID 'java-class' '=' className=STRING ';'
+;
+
+//------- DefaultValueCalculator[OLD VERSION]
+TangDefaultValueCalculatorOld:
+	'default-value-calculator' name=ID '{'
+		'java-class' '=' className=STRING
+	'}'
+;
+
+//------- Window
+TangWindow:
+	'window' name=ID
+	'human-name' '=' humanName=STRING
+	('human-description' '=' description=STRING)?
+	'{'
+		tabs+=Tab+
+	'}'
+;
+
+Tab:
+	'tab' name=ID 
+	'human-name' '=' humanName=STRING 
+	'entity-ref' '=' entity=[TangEntity|QualifiedName] 
+	('level' '=' level=INT)?
+	'{'
+		tabElements+=TabElement+
+//		tabFields+=TabField+
+	'}'
+;
+
+TabElement:
+	Tab | TabField
+;
+TabField:
+	name=ID 
+	'field' '=' field=[Field|QualifiedName]
+	'human-name' '=' humanName=STRING
+	('position' '=' position=INT)?
+	('human-description' '=' description=STRING)?
+	';'
+;

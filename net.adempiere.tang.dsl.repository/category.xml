@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature id="net.adempiere.tang.dsl.feature" version="0.0.0">
+      <category name="main"/>
+   </feature>
+   <feature id="net.adempiere.tang.dsl.feature.source" version="0.0.0">
+      <category name="main.source"/>
+   </feature>
+   <category-def name="main" label="Tang"/>
+   <category-def name="main.source" label="Tang (Sources)"/>
+</site>

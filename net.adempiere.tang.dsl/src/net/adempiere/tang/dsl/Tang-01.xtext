@@ -1,0 +1,75 @@
+grammar net.adempiere.tang.dsl.Tang with org.eclipse.xtext.common.Terminals
+
+generate tang "http://www.adempiere.net/tang/dsl/Tang"
+
+Model:
+	tangTypes+=TangType*
+;
+
+TangType:
+	SuperTangType | SubTangType
+;
+
+SuperTangType:
+	'type' name=ID '{'
+		basicType=BasicTypes 
+//		'max-length' '=' maxLength=INT 
+//		(allowNull?='allow-null' '=' ('true' | 'false'))
+//		(array?='[' (length=INT)? ']')?
+	'}';
+BasicTypes:
+	/*BasicType | */BasicStringType | BasicIntegerType
+;
+BasicType:
+	typeName=('Boolean' | 'BigDecimal' | 'Date' | 'DateTime')
+;
+
+BasicStringType:
+	'String' 
+	'max-length' '=' maxLength=INT 
+	(allowNull?='allow-null' '=' ('true' | 'false'))
+;
+SubStringType:
+	'sub-string-type' name=ID ('extends' superType=[BasicStringType]) '{'
+	('max-length' '=' maxLength=INT)?
+	(allowNull?='allow-null' '=' ('true' | 'false'))?
+	'}'
+;
+
+BasicIntegerType:
+	'Integer' 
+	'max-digits' '=' maxLength=INT 
+	(allowNull?='allow-null' '=' ('true' | 'false'))
+	('min-value' '=' minValue=INT)?
+	('max-value' '=' maxValue=INT)?
+;
+SubIntegerType:
+	'sub-integer-type' name=ID ('extends' superType=[BasicIntegerType]) '{'
+	('max-digits' '=' maxLength=INT)? 
+	(allowNull?='allow-null' '=' ('true' | 'false'))?
+	('min-value' '=' minValue=INT)?
+	('max-value' '=' maxValue=INT)?
+	'}'
+;
+
+SubTangType:
+	SubStringType | SubIntegerType
+;
+
+SubGeneralType:
+	'sub-type' name=ID ('extends' superType=[SuperTangType]) '{'
+		('max-length' '=' maxLength=INT)?
+		(allowNull?='allow-null' '=' ('true' | 'false'))?
+	'}'
+;
+/* -- Example Tang Types
+type Name {
+	String max-length=60 allow-null=true/false
+}
+sub-type NameNullable extends Name {
+	allow-null=true // override only one attribute
+}
+type Description {
+	String max-length=255 allow-null=true
+}
+ */

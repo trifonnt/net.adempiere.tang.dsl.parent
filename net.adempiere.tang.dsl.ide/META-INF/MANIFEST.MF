@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: net.adempiere.tang.dsl.ide
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: net.adempiere.tang.dsl.ide; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: net.adempiere.tang.dsl,
+ org.eclipse.xtext.ide,
+ org.eclipse.xtext.xbase.ide,
+ org.antlr.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: net.adempiere.tang.dsl.ide.contentassist.antlr,
+ net.adempiere.tang.dsl.ide.contentassist.antlr.internal
+

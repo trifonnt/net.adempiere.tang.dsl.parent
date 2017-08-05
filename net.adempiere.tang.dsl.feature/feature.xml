@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature id="net.adempiere.tang.dsl.feature"
+	label="Tang Feature "
+	version="1.0.0.qualifier">
+	<plugin
+			id="net.adempiere.tang.dsl"
+			download-size="0"
+			install-size="0"
+			version="0.0.0"
+			unpack="false"/>
+	<plugin
+			id="net.adempiere.tang.dsl.ide"
+			download-size="0"
+			install-size="0"
+			version="0.0.0"
+			unpack="false"/>
+	<plugin
+			id="net.adempiere.tang.dsl.ui"
+			download-size="0"
+			install-size="0"
+			version="0.0.0"
+			unpack="false"/>
+</feature>
