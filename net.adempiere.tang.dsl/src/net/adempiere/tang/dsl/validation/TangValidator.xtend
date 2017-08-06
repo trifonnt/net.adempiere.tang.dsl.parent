@@ -9,6 +9,8 @@ import net.adempiere.tang.dsl.tang.TangType
 import net.adempiere.tang.dsl.tang.EntityViewAlias
 import net.adempiere.tang.dsl.tang.EntityViewField
 import net.adempiere.tang.dsl.tang.Field
+import net.adempiere.tang.dsl.tang.TangAbstractElement
+import net.adempiere.tang.dsl.tang.Tab
 
 /**
  * This class contains custom validation rules. 
@@ -28,18 +30,27 @@ class TangValidator extends AbstractTangValidator {
 		}
 	}
 
-/* 	@Check
-	def checkEntityStartsWithCapital(TangEntity tangEntity) {
-		if (!Character.isUpperCase(tangEntity.name.charAt(0))) {
+	@Check
+	def checkAbstractElementStartsWithCapital(TangAbstractElement tangAbstractElement) {
+		if (!Character.isUpperCase(tangAbstractElement.name.charAt(0))) {
 			warning('Name should start with a capital', 
-					TangPackage.Literals.TANG_ENTITY__NAME,
+					TangPackage.Literals.TANG_ABSTRACT_ELEMENT__NAME,
 					INVALID_NAME)
 		}
 	}
-*/
+
 	@Check
-	def checkAttributeStartsWithLower(Field tangAttribute) {
-		if (!Character.isLowerCase(tangAttribute.name.charAt(0))) {
+	def checkTabStartsWithCapital(Tab tab) {
+		if (!Character.isUpperCase(tab.name.charAt(0))) {
+			warning('Name should start with a capital', 
+					TangPackage.Literals.TAB_ELEMENT__NAME,
+					INVALID_NAME)
+		}
+	}
+
+	@Check
+	def checkFieldStartsWithLower(Field tangField) {
+		if (!Character.isLowerCase(tangField.name.charAt(0))) {
 			warning('Name should start with a lower', 
 					TangPackage.Literals.FIELD__NAME,
 					INVALID_NAME)
