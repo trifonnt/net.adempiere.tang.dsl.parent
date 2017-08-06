@@ -50,7 +50,7 @@ TangAbstractElement: // By this way order of Model.tangModelElements will not ma
 ;
 
 TangAbstractEntity:
-	TangEntity | TangEntityView | TangEntityViewNative
+	TangEntity | TangEntityViewNative | TangEntityView
 ;
 
 QualifiedName: // When importing grammar: org.eclipse.xtext.xbase.Xbase
