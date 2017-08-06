@@ -36,17 +36,21 @@ terminal LONG returns ecore::ELong: ('0'..'9')+ 'l';
 
 TangPackageDeclaration:
 	'package' name=QualifiedName '{'
-		(imports+=TangImport)*
-		(defaultValueCalculatorList=TangDefaultValueCalculatorList)?
-		(elements+=TangAbstractElement)*
+		imports+=TangImport*
+		defaultValueCalculatorList=TangDefaultValueCalculatorList?
+		elements+=TangAbstractElement*
 	'}'
 ;
 
 TangAbstractElement: // By this way order of Model.tangModelElements will not matter!
 //	TangPackageDeclaration
-	TangType // | TangDefaultValueCalculator 
-	| TangEntity | TangEntityViewNative | TangEntityView
+	TangType 
+	| TangAbstractEntity
 	| TangWindow
+;
+
+TangAbstractEntity:
+	TangEntity | TangEntityView | TangEntityViewNative
 ;
 
 QualifiedName: // When importing grammar: org.eclipse.xtext.xbase.Xbase
@@ -272,7 +276,7 @@ TangWindow:
 Tab:
 	'tab' name=ID 
 	'human-name' '=' humanName=STRING 
-	'entity-ref' '=' entity=[TangEntity|QualifiedName] 
+	'entity-ref' '=' entity=[TangAbstractEntity|QualifiedName] 
 	('level' '=' level=INT)?
 	'{'
 		tabElements+=TabElement+
