@@ -11,6 +11,7 @@ import net.adempiere.tang.dsl.tang.EntityViewField
 import net.adempiere.tang.dsl.tang.Field
 import net.adempiere.tang.dsl.tang.TangAbstractElement
 import net.adempiere.tang.dsl.tang.Tab
+import net.adempiere.tang.dsl.tang.TangEntity
 
 /**
  * This class contains custom validation rules. 
@@ -21,6 +22,30 @@ class TangValidator extends AbstractTangValidator {
 	
 	public static val INVALID_NAME = 'invalidName'
 
+
+// - Cycle in Entity hierarchy
+
+	@Check
+	def checkNoCycleInEntityHierarchy(TangEntity tangEntity) {
+		if (tangEntity.superEntity === null) {
+			return // nothing to check
+		}
+		var visitedEntities = newHashSet(tangEntity);
+		var current = tangEntity.superEntity;
+		while (current !== null) {
+			if (visitedEntities.contains(current)) {
+				error("Cycle in hierarchy of entity '"+ current.name +"'"
+//					, TangPackage.eINSTANCE.tangEntity_SuperEntity // This
+					, TangPackage.Literals.TANG_ENTITY__SUPER_ENTITY // OR this
+				);
+				return;
+			}
+			visitedEntities.add(current);
+			current = current.superEntity;
+		}
+	}
+
+// - Capital letter validations
 	@Check
 	def checkTypeStartsWithCapital(TangType tangType) {
 		if (!Character.isUpperCase(tangType.name.charAt(0))) {
@@ -48,6 +73,7 @@ class TangValidator extends AbstractTangValidator {
 		}
 	}
 
+// - Lower letter validations
 	@Check
 	def checkFieldStartsWithLower(Field tangField) {
 		if (!Character.isLowerCase(tangField.name.charAt(0))) {
@@ -74,4 +100,5 @@ class TangValidator extends AbstractTangValidator {
 					INVALID_NAME)
 		}
 	}
+
 }
