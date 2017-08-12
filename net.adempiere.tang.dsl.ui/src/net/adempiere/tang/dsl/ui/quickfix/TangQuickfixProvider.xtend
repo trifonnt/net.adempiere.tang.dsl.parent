@@ -4,21 +4,46 @@
 package net.adempiere.tang.dsl.ui.quickfix
 
 import org.eclipse.xtext.ui.editor.quickfix.DefaultQuickfixProvider
+import org.eclipse.xtext.ui.editor.quickfix.Fix
+import net.adempiere.tang.dsl.validation.TangValidator
+import org.eclipse.xtext.validation.Issue
+import org.eclipse.xtext.ui.editor.quickfix.IssueResolutionAcceptor
+import net.adempiere.tang.dsl.tang.Field
 
 /**
  * Custom quickfixes.
  *
  * See https://www.eclipse.org/Xtext/documentation/310_eclipse_support.html#quick-fixes
  */
+// @Trifon
 class TangQuickfixProvider extends DefaultQuickfixProvider {
 
-//	@Fix(TangValidator.INVALID_NAME)
-//	def capitalizeName(Issue issue, IssueResolutionAcceptor acceptor) {
-//		acceptor.accept(issue, 'Capitalize name', 'Capitalize the name.', 'upcase.png') [
-//			context |
-//			val xtextDocument = context.xtextDocument
-//			val firstLetter = xtextDocument.get(issue.offset, 1)
-//			xtextDocument.replace(issue.offset, 1, firstLetter.toUpperCase)
-//		]
-//	}
+	// This method provides fix by modifying Textual representation
+	@Fix(TangValidator.INVALID_TYPE_NAME)
+	def capitalizeTypeNameFirstLetter(Issue issue, IssueResolutionAcceptor acceptor) {
+		acceptor.accept(issue
+			, 'Capitalize first letter'  // label
+			, "Capitalize first letter of '" + issue.data.get(0) + "'" // description
+			, 'upcase.png' // icon
+		) [
+			context |
+			val xtextDocument = context.xtextDocument
+			val firstLetter = xtextDocument.get(issue.offset, 1)
+			xtextDocument.replace(issue.offset, 1, firstLetter.toUpperCase)
+		]
+	}
+
+	// This method provides fix by modifying Textual representation
+	@Fix(TangValidator.INVALID_ATTRIBUTE_NAME)
+	def uncapitalizeFieldNameFirstLetter(Issue issue, IssueResolutionAcceptor acceptor) {
+		acceptor.accept(issue
+			, 'Uncapitalize first letter'  // label
+			, "Uncapitalize first letter of '" + issue.data.get(0) + "'" // description
+			, 'upcase.png' // icon
+		) [
+			field, context |
+			(field as Field).name = issue.data.get(0).toFirstLower;
+		]
+	}
+
 }

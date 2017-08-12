@@ -1,0 +1,14 @@
+net.adempiere.tang.dsl.ide/src-gen/
+net.adempiere.tang.dsl.ide/target/
+net.adempiere.tang.dsl.ide/xtend-gen/
+net.adempiere.tang.dsl.tests/src-gen/
+net.adempiere.tang.dsl.tests/target/
+net.adempiere.tang.dsl.tests/xtend-gen/
+net.adempiere.tang.dsl.ui.tests/src-gen/
+net.adempiere.tang.dsl.ui.tests/target/
+net.adempiere.tang.dsl.ui/src-gen/
+net.adempiere.tang.dsl.ui/target/
+net.adempiere.tang.dsl.ui/xtend-gen/
+net.adempiere.tang.dsl.web/src-gen/
+net.adempiere.tang.dsl.web/target/
+net.adempiere.tang.dsl.web/xtend-gen/
