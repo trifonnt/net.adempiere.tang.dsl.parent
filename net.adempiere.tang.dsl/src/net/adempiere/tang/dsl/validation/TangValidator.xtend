@@ -18,11 +18,14 @@ import net.adempiere.tang.dsl.tang.TangEntity
  *
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
+// @Trifon
 class TangValidator extends AbstractTangValidator {
 
 	protected static val ISSUE_CODE_PREFIX = "net.adempiere.tang.";
 
 	public static val ENTITY_HIERARCHY_CYCLE = ISSUE_CODE_PREFIX + "EntityHierarchyCycle";
+	public static val INVALID_TYPE_NAME = ISSUE_CODE_PREFIX + "InvalidTypeName";
+
 	public static val INVALID_ENTITY_NAME = ISSUE_CODE_PREFIX + "InvalidEntityName";
 	public static val INVALID_ATTRIBUTE_NAME = ISSUE_CODE_PREFIX + "InvalidAttributeName";
 
@@ -56,9 +59,10 @@ class TangValidator extends AbstractTangValidator {
 	@Check
 	def checkTypeStartsWithCapital(TangType tangType) {
 		if (!Character.isUpperCase(tangType.name.charAt(0))) {
-			warning('Name should start with a capital letter', 
-				TangPackage.Literals.TANG_ABSTRACT_ELEMENT__NAME,
-				INVALID_NAME
+			warning('Name should start with a capital letter'
+				, TangPackage.Literals.TANG_ABSTRACT_ELEMENT__NAME
+				, INVALID_TYPE_NAME
+				, tangType.name // issue data
 			)
 		}
 	}
@@ -66,9 +70,10 @@ class TangValidator extends AbstractTangValidator {
 	@Check
 	def checkAbstractElementStartsWithCapital(TangAbstractElement tangAbstractElement) {
 		if (!Character.isUpperCase(tangAbstractElement.name.charAt(0))) {
-			warning('Name should start with a capital letter', 
-				TangPackage.Literals.TANG_ABSTRACT_ELEMENT__NAME,
-				INVALID_NAME
+			warning('Name should start with a capital letter'
+				, TangPackage.Literals.TANG_ABSTRACT_ELEMENT__NAME
+				, INVALID_NAME
+				, tangAbstractElement.name // issue data
 			)
 		}
 	}
@@ -76,9 +81,10 @@ class TangValidator extends AbstractTangValidator {
 	@Check
 	def checkTabStartsWithCapital(Tab tab) {
 		if (!Character.isUpperCase(tab.name.charAt(0))) {
-			warning('Tab Name should start with a capital letter', 
-				TangPackage.Literals.TAB_ELEMENT__NAME,
-				INVALID_NAME
+			warning('Tab Name should start with a capital letter'
+				, TangPackage.Literals.TAB_ELEMENT__NAME
+				, INVALID_NAME
+				, tab.name // issue data
 			)
 		}
 	}
@@ -87,9 +93,10 @@ class TangValidator extends AbstractTangValidator {
 	@Check
 	def checkFieldStartsWithLower(Field tangField) {
 		if (!Character.isLowerCase(tangField.name.charAt(0))) {
-			warning('Field Name should start with a lower letter',
-				TangPackage.Literals.FIELD__NAME,
-				INVALID_ATTRIBUTE_NAME
+			warning('Field Name should start with a lower letter'
+				, TangPackage.Literals.FIELD__NAME
+				, INVALID_ATTRIBUTE_NAME
+				, tangField.name // issue data
 			)
 		}
 	}
@@ -97,9 +104,10 @@ class TangValidator extends AbstractTangValidator {
 	@Check
 	def checkEntityViewAliasStartsWithLower(EntityViewAlias entityViewAlias) {
 		if (!Character.isLowerCase(entityViewAlias.name.charAt(0))) {
-			warning('Alias should start with a lower letter', 
-				TangPackage.Literals.ENTITY_VIEW_ALIAS__NAME,
-				INVALID_NAME
+			warning('Alias should start with a lower letter'
+				, TangPackage.Literals.ENTITY_VIEW_ALIAS__NAME
+				, INVALID_NAME
+				, entityViewAlias.name // issue data
 			)
 		}
 	}
@@ -107,9 +115,10 @@ class TangValidator extends AbstractTangValidator {
 	@Check
 	def checkEntityViewFieldStartsWithLower(EntityViewField entityViewField) {
 		if (!Character.isLowerCase(entityViewField.name.charAt(0))) {
-			warning('Field name should start with a lower letter', 
-				TangPackage.Literals.ENTITY_VIEW_FIELD__NAME,
-				INVALID_NAME
+			warning('Field name should start with a lower letter'
+				, TangPackage.Literals.ENTITY_VIEW_FIELD__NAME
+				, INVALID_NAME
+				, entityViewField.name // issue data
 			)
 		}
 	}
