@@ -200,8 +200,9 @@ TangEntity:
 	'db-table-name' '=' tableName=STRING 
 	('extends' superEntity=[TangEntity|QualifiedName])? 
 	'{'
-		fields+=Field+
-		primaryKey=PrimaryKey
+		fields+=Field*   // *=0..Many; +=1..Many // TODO - Decide if entity with 0 fields will be valid???
+		// Maybe if current entity extends other entity then it can have 0 fields!!!
+		primaryKey=PrimaryKey? // TODO - Allow 0 primary key def. if super Entity has primary Key!!!
 		uniqueCombinations+=UniqueCombination*
 		tableIndexes+=DBTableIndex*
 	'}'
