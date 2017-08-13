@@ -39,10 +39,7 @@ class TangLabelProvider extends DefaultEObjectLabelProvider {
 	def text(Field field) {
 		field.name + 
 			if (field.fieldType !== null) {
-//				" : " + field.fieldType.name;
-				" : " + field.fieldType.toJavaType;
-//				val fieldType = field.fieldType;
-//				" : " + 
+				"["+(field?.columnName ?: "") +"] : " + field.fieldType.toJavaType;
 			} else {
 				"";
 			}

@@ -3,6 +3,7 @@
  */
 package net.adempiere.tang.dsl.ui.outline
 
+import net.adempiere.tang.dsl.tang.Field
 import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
 
 /**
@@ -12,4 +13,8 @@ import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
  */
 class TangOutlineTreeProvider extends DefaultOutlineTreeProvider {
 
+	// @Trifon
+	def _isLeaf(Field field) {
+		return true;
+	}
 }
