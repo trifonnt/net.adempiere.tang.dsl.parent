@@ -40,12 +40,16 @@ Workflow {
 				generateStub = true
 			}
 			validator = {
-				// @Trifon - enable checking if names are unique!
+				// @Trifon - Enable checking if names are unique!
 				composedCheck = "org.eclipse.xtext.validation.NamesAreUniqueValidator"
 			}
-			// @Trifon - enable generation of Eclipse Wizards
+			// @Trifon - Enable generation of Eclipse Wizards
 			newProjectWizardForEclipse = {
 				generate = true
+			}
+			// @Trifon - Enable generation of net.adempiere.tang.dsl/src/net/adempiere/tang/dsl/generator/Main.xtend
+			generator = {
+				generateXtendMain = true
 			}
 		}
 	}
