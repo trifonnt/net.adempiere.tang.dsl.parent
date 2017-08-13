@@ -4,8 +4,10 @@
 package net.adempiere.tang.dsl.ui.labeling
 
 import com.google.inject.Inject
+import net.adempiere.tang.dsl.tang.Field
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider
 import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider
+import net.adempiere.tang.dsl.generator.TangTypeToJavaTypeConverter
 
 /**
  * Provides labels for EObjects.
@@ -13,6 +15,10 @@ import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#label-provider
  */
 class TangLabelProvider extends DefaultEObjectLabelProvider {
+
+	// @Trifon
+	@Inject
+	extension TangTypeToJavaTypeConverter tangTypeToJavaTypeConverter;
 
 	@Inject
 	new(AdapterFactoryLabelProvider delegate) {
@@ -28,4 +34,17 @@ class TangLabelProvider extends DefaultEObjectLabelProvider {
 //	def image(Greeting ele) {
 //		'Greeting.gif'
 //	}
+
+	// @Trifon
+	def text(Field field) {
+		field.name + 
+			if (field.fieldType !== null) {
+//				" : " + field.fieldType.name;
+				" : " + field.fieldType.toJavaType;
+//				val fieldType = field.fieldType;
+//				" : " + 
+			} else {
+				"";
+			}
+	}
 }

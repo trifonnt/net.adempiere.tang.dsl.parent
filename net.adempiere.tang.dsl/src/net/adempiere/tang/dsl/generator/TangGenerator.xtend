@@ -13,6 +13,7 @@ import com.google.inject.Inject
 import org.eclipse.xtext.naming.IQualifiedNameProvider
 import net.adempiere.tang.dsl.tang.Field
 import net.adempiere.tang.dsl.tang.TangType
+import net.adempiere.tang.dsl.tang.TangAbstractEntity
 
 /**
  * Generates code from your model files on save.
@@ -21,7 +22,12 @@ import net.adempiere.tang.dsl.tang.TangType
  */
 class TangGenerator extends AbstractGenerator {
 
-@Inject extension IQualifiedNameProvider
+	@Inject
+	extension IQualifiedNameProvider
+
+	@Inject // @Trifon
+	extension TangTypeToJavaTypeConverter typeRepresentation;
+
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		//+01) Generate tiny documentation.
@@ -80,19 +86,28 @@ class TangGenerator extends AbstractGenerator {
 	def generateJavaField(Field f) {
 		'''
 		
-		//	private «f.fieldType.name» «f.name»;
-			private «f.fieldType.name» «f.name»;
+			private «IF f.fieldType instanceof TangAbstractEntity»transient «ENDIF»«f.fieldType.toJavaType» «f.name»;
+			«IF f.fieldType instanceof TangAbstractEntity»
+			«val fieldType = f.fieldType as TangAbstractEntity»
+			private «fieldType.toJavaTypeOfPrimaryKey» «f.name»Id;
+			«ENDIF»
 		'''
 	}
 	def generateJavaGetterAndSetter(Field f) {
 		'''
 		
-			public «f.fieldType.name» get«f.name.toFirstUpper»() {
+			public «f.fieldType.toJavaType» get«f.name.toFirstUpper»() {
 				return «f.name»;
 			}
-			public void set«f.name.toFirstUpper»(«f.fieldType.name» «f.name») {
+			public void set«f.name.toFirstUpper»(«f.fieldType.toJavaType» «f.name») {
 				this.«f.name» = «f.name»;
 			}
+		«IF f.fieldType instanceof TangAbstractEntity»
+		«val fieldType = f.fieldType as TangAbstractEntity»
+			public «fieldType.toJavaTypeOfPrimaryKey» get«f.name.toFirstUpper»Id() {
+				return «f.name»Id;
+			}
+		«ENDIF»
 		'''
 	}
 
