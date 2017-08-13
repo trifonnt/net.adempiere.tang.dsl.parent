@@ -25,11 +25,22 @@ class TangGenerator extends AbstractGenerator {
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		//+01) Generate tiny documentation.
-		fsa.generateFile('all-entities.txt', 'Entities in our System: ' + 
-			resource.allContents
-				.filter(TangEntity)
-				.map[name]
-				.join(', '))
+		for (tangPackage : resource.allContents.toIterable.filter(TangPackageDeclaration)) {
+//			val fileName = 'all-entities--'+ tangPackage.fullyQualifiedName +'.txt';
+
+//src-gen/all-entities--/resource/tangdsl-sample-project-01/03_entities.tang.txt
+//			val fileName = 'all-entities--'+ resource.URI.path +'.txt';
+
+// src-gen/all-entities--03_entities.tang.txt
+			val fileName = 'all-entities--'+ resource.URI.lastSegment +'.txt';
+			fsa.generateFile(fileName, 'Entities in our System: ' + 
+				tangPackage.elements
+					.filter(TangEntity)
+					.map[name]
+					.join(', ')
+			);
+		}
+
 
 		//+02) Generate Java Beans(JPA Entities)
 		for (tangPackage : resource.allContents.toIterable.filter(TangPackageDeclaration)) {
@@ -55,8 +66,12 @@ class TangGenerator extends AbstractGenerator {
 		«ENDIF»
 		public class «entity.name» «IF entity.superEntity !== null»extends «entity.superEntity.fullyQualifiedName» «ENDIF»{
 		
-		«FOR f: entity.fields»
-			«f.generateJavaField»
+		«FOR field: entity.fields»
+			«field.generateJavaField»
+		«ENDFOR»
+
+		«FOR field: entity.fields»
+			«field.generateJavaGetterAndSetter»
 		«ENDFOR»
 		}
 		'''
@@ -65,16 +80,19 @@ class TangGenerator extends AbstractGenerator {
 	def generateJavaField(Field f) {
 		'''
 		
-		//private «f.fieldType.fullyQualifiedName» «f.name»;
-		private «f.fieldType.name» «f.name»;
-
-		public «f.fieldType.name» get«f.name.toFirstUpper»() {
-			return «f.name»;
-		}
-
-		public void set«f.name.toFirstUpper»(«f.fieldType.name» «f.name») {
-			this.«f.name» = «f.name»;
-		}
+		//	private «f.fieldType.name» «f.name»;
+			private «f.fieldType.name» «f.name»;
+		'''
+	}
+	def generateJavaGetterAndSetter(Field f) {
+		'''
+		
+			public «f.fieldType.name» get«f.name.toFirstUpper»() {
+				return «f.name»;
+			}
+			public void set«f.name.toFirstUpper»(«f.fieldType.name» «f.name») {
+				this.«f.name» = «f.name»;
+			}
 		'''
 	}
 
