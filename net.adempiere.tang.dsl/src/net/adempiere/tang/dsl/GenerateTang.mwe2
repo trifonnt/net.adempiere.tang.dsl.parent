@@ -51,6 +51,11 @@ Workflow {
 			generator = {
 				generateXtendMain = true
 			}
+			// @Trifon - Generate formatter - net.adempiere.tang.dsl/src/net/adempiere/tang/dsl/formatting2/TangFormatter.xtend
+			formatter = {
+				generateStub = true
+				generateXtendStub = true
+			}
 		}
 	}
 }

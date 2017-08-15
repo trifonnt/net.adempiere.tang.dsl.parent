@@ -1,0 +1,23 @@
+-01) Implement all TODO tasks inside Java and Xtend classes
+
+
+-02) Check allowed characters in Table and Column names:
+-02.1) PostgreSQL
+-02.2) MySQL
+-02.3) Oracle
+
+
+-03) Max characters of Table and Column names:
+-03.1) PostgreSQL
+-03.2) MySQL
+-03.3) Oracle
+
+
+-04) TANG DSL:
+-04.1) (Validation) Do not allow duplicate table Names in the whole SYSTEM or per CUSTOMER!
+
+
+-05) One Tang Project MUST contain only one .tang model file?
+
+
+-06) 

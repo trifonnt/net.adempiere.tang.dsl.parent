@@ -5,14 +5,14 @@ import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
 generate tang "http://www.adempiere.net/tang/dsl/Tang"
 
-// *****************
+// ******************************************************************
 // *** Documentation
-// *** cardinalities (?= optional, *= any number, += at least once)
-// *****************
+// *** - Cardinalities (?= optional, *= any number, += at least once)
+// ******************************************************************
 
 /*
  * TODO
- * domain-name(vendor....: net.adempiere
+ * domain(vendor)-name...: net.adempiere
  * application-name......: product
  * application-version...: 1.0.0
  */
@@ -200,7 +200,7 @@ TangEntity:
 	'db-table-name' '=' tableName=STRING 
 	('extends' superEntity=[TangEntity|QualifiedName])? 
 	'{'
-		fields+=Field*   // *=0..Many; +=1..Many // TODO - Decide if entity with 0 fields will be valid???
+		fields+=Field*   // *=0..Many; +=1..Many // TODO - Decide if entity with 0 fields will be valid? If entity extends another Entity then it must be valid!
 		// Maybe if current entity extends other entity then it can have 0 fields!!!
 		primaryKey=PrimaryKey? // TODO - Allow 0 primary key def. if super Entity has primary Key!!!
 		uniqueCombinations+=UniqueCombination*

@@ -25,6 +25,7 @@ class TangValidator extends AbstractTangValidator {
 
 	public static val ENTITY_HIERARCHY_CYCLE = ISSUE_CODE_PREFIX + "EntityHierarchyCycle";
 	public static val INVALID_TYPE_NAME = ISSUE_CODE_PREFIX + "InvalidTypeName";
+	public static val ENTITY_HAS_NO_FIELDS = ISSUE_CODE_PREFIX + "EntityHasNoFields";
 
 	public static val INVALID_ENTITY_NAME = ISSUE_CODE_PREFIX + "InvalidEntityName";
 	public static val INVALID_ATTRIBUTE_NAME = ISSUE_CODE_PREFIX + "InvalidAttributeName";
@@ -36,7 +37,7 @@ class TangValidator extends AbstractTangValidator {
 	@Check
 	def checkNoCycleInEntityHierarchy(TangEntity tangEntity) {
 		if (tangEntity.superEntity === null) {
-			return // nothing to check
+			return // Nothing to check
 		}
 		var visitedEntities = newHashSet(tangEntity);
 		var current = tangEntity.superEntity;
@@ -54,6 +55,25 @@ class TangValidator extends AbstractTangValidator {
 			current = current.superEntity;
 		}
 	}
+
+// - Check number of fields which Entity declares:
+// 1) If Entity do not extends another entity then it MUST have 1 or more fields!
+// 2) If Entity extends another entity then it can have 0 or more fields!
+	@Check
+	def checkNumberOfEntityFields(TangEntity tangEntity) {
+		if (tangEntity.fields.empty) {
+			if (tangEntity.superEntity === null) {
+				// Entity MUST have at least 1 field!
+				error("Entity '"+ tangEntity.name +"' has no fields"
+					, TangPackage.Literals.TANG_ENTITY__FIELDS
+					, ENTITY_HAS_NO_FIELDS // issue code
+					, tangEntity.name // issue data
+				);
+				
+			}
+		}
+	}
+
 
 // - Capital letter validations
 	@Check

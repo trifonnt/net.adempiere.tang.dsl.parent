@@ -3,9 +3,16 @@
  */
 package net.adempiere.tang.dsl
 
+import org.eclipse.xtext.generator.IOutputConfigurationProvider
+import net.adempiere.tang.dsl.generator.TangOutputConfigurationProvider
 
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
  */
 class TangRuntimeModule extends AbstractTangRuntimeModule {
+
+	//@Trifon - Configure OutputConfigurationProvider!
+	def Class<? extends IOutputConfigurationProvider> bindIOutputConfigurationProvider() {
+		return TangOutputConfigurationProvider
+	}
 }

@@ -28,5 +28,6 @@ Export-Package: net.adempiere.tang.dsl,
  net.adempiere.tang.dsl.parser.antlr,
  net.adempiere.tang.dsl.scoping,
  net.adempiere.tang.dsl.tang.impl,
- net.adempiere.tang.dsl.jvmmodel
+ net.adempiere.tang.dsl.jvmmodel,
+ net.adempiere.tang.dsl.formatting2
 Import-Package: org.apache.log4j

@@ -4,7 +4,9 @@
 package net.adempiere.tang.dsl.ui.outline
 
 import net.adempiere.tang.dsl.tang.Field
+import net.adempiere.tang.dsl.tang.TangModule
 import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
+import org.eclipse.xtext.ui.editor.outline.impl.DocumentRootNode
 
 /**
  * Customization of the default outline structure.
@@ -16,5 +18,13 @@ class TangOutlineTreeProvider extends DefaultOutlineTreeProvider {
 	// @Trifon
 	def _isLeaf(Field field) {
 		return true;
+	}
+	
+	// @Trifon - Make Tang packages root of the Outline Tree!
+	def void _createChildren(DocumentRootNode outlineNode, TangModule module) {
+		module.tangPackages.forEach[
+			package |
+			createNode(outlineNode, package)
+		]
 	}
 }
