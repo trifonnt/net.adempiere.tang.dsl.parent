@@ -22,6 +22,7 @@ import net.adempiere.tang.dsl.tang.TangAbstractEntity
  */
 class TangGenerator extends AbstractGenerator {
 
+	//@Trifon
 	@Inject
 	extension IQualifiedNameProvider
 
