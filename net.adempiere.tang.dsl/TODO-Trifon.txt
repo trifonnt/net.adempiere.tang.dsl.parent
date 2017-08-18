@@ -1,3 +1,9 @@
+= Info
+   Data Model Design Best Practices (Part 2)
+ - https://dzone.com/articles/data-model-design-best-practices-part-2?edition=316422&utm_source=Zone%20Newsletter&utm_medium=email&utm_campaign=big%20data%202017-08-17
+
+
+= TODO
 -01) Implement all TODO tasks inside Java and Xtend classes
 
 
