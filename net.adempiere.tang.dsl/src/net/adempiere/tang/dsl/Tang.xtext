@@ -294,12 +294,12 @@ Tab:
 	'entity-ref' '=' entity=[TangAbstractEntity|QualifiedName] 
 	('level' '=' level=INT)?
 	'{'
-		tabElements+=TabElement+
+		tabElements+=TabAbstractElement+
 //		tabFields+=TabField+
 	'}'
 ;
 
-TabElement:
+TabAbstractElement:
 	Tab | TabField
 ;
 TabField:

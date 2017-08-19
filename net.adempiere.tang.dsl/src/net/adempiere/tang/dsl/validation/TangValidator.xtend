@@ -75,33 +75,33 @@ class TangValidator extends AbstractTangValidator {
 
 
 // - Capital letter validations
-//	@Check
-//	def checkTypeStartsWithCapital(TangType tangType) {
-//		if (!Character.isUpperCase(tangType.name.charAt(0))) {
-//			warning('Name should start with a capital letter'
-//				, TangPackage.Literals.TANG_ABSTRACT_ELEMENT__NAME
-//				, INVALID_TYPE_NAME
-//				, tangType.name // issue data
-//			)
-//		}
-//	}
+	@Check
+	def checkTypeStartsWithCapital(TangType tangType) {
+		if (!Character.isUpperCase(tangType.name.charAt(0))) {
+			warning('Name should start with a capital letter'
+				, TangPackage.Literals.TANG_ABSTRACT_ELEMENT__NAME
+				, INVALID_TYPE_NAME
+				, tangType.name // issue data
+			)
+		}
+	}
 
-//	@Check
-//	def checkAbstractElementStartsWithCapital(TangAbstractElement tangAbstractElement) {
-//		if (!Character.isUpperCase(tangAbstractElement.name.charAt(0))) {
-//			warning('Name should start with a capital letter'
-//				, TangPackage.Literals.TANG_ABSTRACT_ELEMENT__NAME
-//				, INVALID_NAME
-//				, tangAbstractElement.name // issue data
-//			)
-//		}
-//	}
+	@Check
+	def checkAbstractElementStartsWithCapital(TangAbstractElement tangAbstractElement) {
+		if (!Character.isUpperCase(tangAbstractElement.name.charAt(0))) {
+			warning('Name should start with a capital letter'
+				, TangPackage.Literals.TANG_ABSTRACT_ELEMENT__NAME
+				, INVALID_NAME
+				, tangAbstractElement.name // issue data
+			)
+		}
+	}
 
 	@Check
 	def checkTabStartsWithCapital(Tab tab) {
 		if (!Character.isUpperCase(tab.name.charAt(0))) {
 			warning('Tab Name should start with a capital letter'
-				, TangPackage.Literals.TAB__NAME
+				, TangPackage.Literals.TAB_ABSTRACT_ELEMENT__NAME
 				, INVALID_NAME
 				, tab.name // issue data
 			)
