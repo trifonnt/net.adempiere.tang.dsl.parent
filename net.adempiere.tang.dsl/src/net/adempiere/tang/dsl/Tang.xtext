@@ -197,7 +197,7 @@ SubDateTimeType:
 //------- Entities
 TangEntity:
 	'entity' name=ID 
-	'db-table-name' '=' tableName=STRING 
+	'db-table-name' '=' tableName=TableOrViewName
 	('extends' superEntity=[TangEntity|QualifiedName])? 
 	'{'
 		fields+=Field*   // *=0..Many; +=1..Many // TODO - Decide if entity with 0 fields will be valid? If entity extends another Entity then it must be valid!
@@ -206,6 +206,10 @@ TangEntity:
 		uniqueCombinations+=UniqueCombination*
 		tableIndexes+=DBTableIndex*
 	'}'
+;
+
+TableOrViewName:
+	STRING // TODO - proper DB Table name
 ;
 
 PrimaryKey:
@@ -236,7 +240,7 @@ DefaultCalculationMethod:
 
 //------- Entity-view-native (Definition of View is maintained with SQL Code!!!)
 TangEntityViewNative:
-	'entity-view-native' name=ID 'db-view-name' '=' dbViewName=STRING '{'
+	'entity-view-native' name=ID 'db-view-name' '=' dbViewName=TableOrViewName '{'
 		'sql' '=' sql=STRING  // TODO - This is not good as we can't refactor SQL code!!!
 	'}'
 ;
@@ -244,7 +248,7 @@ TangEntityViewNative:
 
 //------- Entity-view
 TangEntityView:
-	'entity-view' name=ID 'db-view-name' '=' dbViewName=STRING '{'
+	'entity-view' name=ID 'db-view-name' '=' dbViewName=TableOrViewName '{'
 		'entities' '=' '{' entities+=EntityViewAlias (',' entities+=EntityViewAlias)* '}'
 //		'fields'   '=' '{' fields+=[Attribute|QualifiedName] (',' fields+=[Attribute|QualifiedName])* '}'
 		'fields'   '=' '{' fields+=EntityViewField (',' fields+=EntityViewField)* '}'
