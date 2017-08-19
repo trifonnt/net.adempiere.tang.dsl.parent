@@ -3,6 +3,15 @@
  */
 package net.adempiere.tang.dsl.scoping
 
+import net.adempiere.tang.dsl.tang.EntityViewField
+import net.adempiere.tang.dsl.tang.Field
+import net.adempiere.tang.dsl.tang.TangEntity
+import net.adempiere.tang.dsl.tang.TangPackage
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.EReference
+import org.eclipse.xtext.EcoreUtil2
+import org.eclipse.xtext.scoping.Scopes
+import org.eclipse.xtext.scoping.impl.FilteringScope
 
 /**
  * This class contains custom scoping description.
@@ -11,5 +20,60 @@ package net.adempiere.tang.dsl.scoping
  * on how and when to use it.
  */
 class TangScopeProvider extends AbstractTangScopeProvider {
+
+	// @Trifon - FilteringScope could be used to exclude the context element from 
+	// the list of candidates as it should not be a super-element of itself.
+	override getScope(EObject context, EReference reference) {
+		// Entity
+		if (context instanceof TangEntity
+			&& reference == TangPackage.Literals.TANG_ENTITY__SUPER_ENTITY
+		) {
+			val rootElement = EcoreUtil2.getRootContainer(context)
+			val candidates = EcoreUtil2.getAllContentsOfType(rootElement, TangEntity)
+			val existingScope = Scopes.scopeFor(candidates)
+			// Scope that filters out the context element from the candidates list
+			return new FilteringScope(existingScope, [getEObjectOrProxy != context])
+		}
+
+		// @Trifon
+		//   Path expressions in entity models
+		// - https://dslmeinte.wordpress.com/2010/08/16/path-expressions-in-entity-models/
+		// EntityView - Fields
+		if (context instanceof EntityViewField
+			&& reference == TangPackage.Literals.ENTITY_VIEW_FIELD__FIELD_REF // WORKS!!!
+		) {
+			val currentEntityViewField = context as EntityViewField;
+			val currentRefEntity = currentEntityViewField?.aliasRef?.entity;
+			if (currentRefEntity !== null) {
+				val entityFields = EcoreUtil2.getAllContentsOfType(currentRefEntity, Field);
+			
+				val existingScope = Scopes.scopeFor(entityFields);
+				return existingScope;
+			}
+		}
+		// OLD - version
+//		if (context instanceof TangEntityView
+			//&& (reference instanceof Field || reference instanceof EntityViewField) // DO NOT WORK!
+			//&& reference == TangPackage.Literals.FIELD // DO NOT WORK!
+			//&& reference == TangPackage.Literals.FIELD__FIELD_TYPE // DO NOT WORK!
+			//&& reference.EType.instanceClass == EntityViewField // DO NOT WORK!
+//			&& reference == TangPackage.Literals.ENTITY_VIEW_FIELD__FIELD // WORKS!!!
+//		) {
+//			var currentEntityView = context as TangEntityView;
+//			var referencedEntities = currentEntityView.entities;
+//			var List<Field> allowedFields = newArrayList();
+//
+//			for (EntityViewAlias currentAlias: referencedEntities) {
+//				allowedFields += EcoreUtil2.getAllContentsOfType(currentAlias.entity, Field);
+//			}
+//
+//			val existingScope = Scopes.scopeFor(allowedFields);
+			//return Scopes.scopeFor(allowedFields, existingScope);
+			//return new FilteringScope(existingScope, [getEObjectOrProxy != context])
+//			return existingScope;
+//		}
+
+		return super.getScope(context, reference);
+	}
 
 }

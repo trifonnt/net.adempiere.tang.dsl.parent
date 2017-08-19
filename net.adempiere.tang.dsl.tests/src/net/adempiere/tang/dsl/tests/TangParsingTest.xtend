@@ -15,9 +15,10 @@ import org.junit.runner.RunWith
 @RunWith(XtextRunner)
 @InjectWith(TangInjectorProvider)
 class TangParsingTest {
+
 	@Inject
 	ParseHelper<TangModule> parseHelper
-	
+
 	@Test
 	def void loadExampleModel() {
 		val result = parseHelper.parse(

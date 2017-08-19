@@ -258,7 +258,7 @@ EntityViewAlias:
 	entity=[TangEntity] ('as'|'AS') name=ID
 ;
 EntityViewField:
-	attribute=[Field|QualifiedName] ('as'|'AS') name=ID
+	aliasRef=[EntityViewAlias] '.' fieldRef=[Field] ('as'|'AS') name=ID
 ;
 
 //------- DefaultValueCalculatorList
