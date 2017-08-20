@@ -249,9 +249,9 @@ TangEntityViewNative:
 //------- Entity-view
 TangEntityView:
 	'entity-view' name=ID 'db-view-name' '=' dbViewName=TableOrViewName '{'
-		'entities' '=' '{' entities+=EntityViewAlias (',' entities+=EntityViewAlias)* '}'
-//		'fields'   '=' '{' fields+=[Attribute|QualifiedName] (',' fields+=[Attribute|QualifiedName])* '}'
-		'fields'   '=' '{' fields+=EntityViewField (',' fields+=EntityViewField)* '}'
+		'entities' '{' entities+=EntityViewAlias (',' entities+=EntityViewAlias)* '}'
+		'fields'   '{' fields+=EntityViewField (',' fields+=EntityViewField)* '}'
+		'where'    '{' where+=EntityViewWhere '}'
 	'}'
 ;
 EntityViewAlias:
@@ -259,6 +259,9 @@ EntityViewAlias:
 ;
 EntityViewField:
 	aliasRef=[EntityViewAlias] '.' fieldRef=[Field] ('as'|'AS') name=ID
+;
+EntityViewWhere:
+	left=[EntityViewField] '=' right=[EntityViewField]
 ;
 
 //------- DefaultValueCalculatorList

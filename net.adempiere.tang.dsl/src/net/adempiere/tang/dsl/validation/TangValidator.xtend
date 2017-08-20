@@ -30,6 +30,8 @@ class TangValidator extends AbstractTangValidator {
 	public static val INVALID_ENTITY_NAME = ISSUE_CODE_PREFIX + "InvalidEntityName";
 	public static val INVALID_ATTRIBUTE_NAME = ISSUE_CODE_PREFIX + "InvalidAttributeName";
 
+	public static val DUPLICATE_FIELD_NAME = ISSUE_CODE_PREFIX + "DuplicateFieldName";
+
 	public static val INVALID_NAME = ISSUE_CODE_PREFIX + 'InvalidName';
 
 
@@ -71,6 +73,35 @@ class TangValidator extends AbstractTangValidator {
 				);
 			}
 		}
+	}
+// - Check is there is duplicated Entity field names in the whole Entity hierarchy!
+	@Check
+	def checkUniquesOfEntityFieldNames(TangEntity tangEntity) {
+		if (tangEntity.superEntity === null) {
+			return // Nothing to check
+		}
+		var visitedFields = newHashSet();
+		for (Field currentField : tangEntity.fields) {
+			visitedFields.add(currentField.name);
+		}
+		var currentEntity = tangEntity.superEntity;
+		var parentEntity = tangEntity;
+		while (currentEntity !== null) {
+			for (Field currentField: currentEntity.fields) {
+				if (visitedFields.contains(currentField.name)) {
+					error("Duplicate field name '"+currentField.name+"' in entity '"+ parentEntity.name +"'"
+						, TangPackage.Literals.TANG_ENTITY__FIELDS
+						, DUPLICATE_FIELD_NAME // issue code
+						, currentField.name    // issue data
+					);
+					return;
+				}
+				visitedFields.add(currentField.name);
+			}
+			parentEntity = currentEntity;
+			currentEntity = currentEntity.superEntity;
+		}
+		
 	}
 
 

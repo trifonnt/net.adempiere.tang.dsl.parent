@@ -3,8 +3,10 @@
  */
 package net.adempiere.tang.dsl.scoping
 
+import java.util.List
 import net.adempiere.tang.dsl.tang.EntityViewField
 import net.adempiere.tang.dsl.tang.Field
+import net.adempiere.tang.dsl.tang.PrimaryKey
 import net.adempiere.tang.dsl.tang.TangEntity
 import net.adempiere.tang.dsl.tang.TangPackage
 import org.eclipse.emf.ecore.EObject
@@ -12,6 +14,7 @@ import org.eclipse.emf.ecore.EReference
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.scoping.Scopes
 import org.eclipse.xtext.scoping.impl.FilteringScope
+import net.adempiere.tang.dsl.tang.UniqueCombination
 
 /**
  * This class contains custom scoping description.
@@ -24,7 +27,7 @@ class TangScopeProvider extends AbstractTangScopeProvider {
 	// @Trifon - FilteringScope could be used to exclude the context element from 
 	// the list of candidates as it should not be a super-element of itself.
 	override getScope(EObject context, EReference reference) {
-		// Entity
+		// Entity - SuperEntity
 		if (context instanceof TangEntity
 			&& reference == TangPackage.Literals.TANG_ENTITY__SUPER_ENTITY
 		) {
@@ -34,8 +37,33 @@ class TangScopeProvider extends AbstractTangScopeProvider {
 			// Scope that filters out the context element from the candidates list
 			return new FilteringScope(existingScope, [getEObjectOrProxy != context])
 		}
+		// Entity - PrimaryKey
+		if (context instanceof PrimaryKey
+			&& reference == TangPackage.Literals.PRIMARY_KEY__FIELDS
+		) {
+			val primaryKey = context as PrimaryKey;
+			val tangEntity = primaryKey.eContainer as TangEntity;
+			if (tangEntity !== null) {
+				var visibleFields = collectFieldFromEntityHierarchy(tangEntity);
 
-		// @Trifon
+				val existingScope = Scopes.scopeFor(visibleFields);
+				return existingScope;
+			}
+		}
+		// Entity - UniqueCombination
+		if (context instanceof UniqueCombination
+			&& reference == TangPackage.Literals.UNIQUE_COMBINATION__FIELDS
+		) {
+			val uniqueCombination = context as UniqueCombination;
+			val tangEntity = uniqueCombination.eContainer as TangEntity;
+			if (tangEntity !== null) {
+				var visibleFields = collectFieldFromEntityHierarchy(tangEntity);
+
+				val existingScope = Scopes.scopeFor(visibleFields);
+				return existingScope;
+			}
+		}
+
 		//   Path expressions in entity models
 		// - https://dslmeinte.wordpress.com/2010/08/16/path-expressions-in-entity-models/
 		// EntityView - Fields
@@ -74,6 +102,25 @@ class TangScopeProvider extends AbstractTangScopeProvider {
 //		}
 
 		return super.getScope(context, reference);
+	}
+	
+	protected def List<Field> collectFieldFromEntityHierarchy(TangEntity tangEntity) {
+		if (tangEntity !== null) {
+			var visitedFields = EcoreUtil2.getAllContentsOfType(tangEntity, Field);
+
+			var currentEntity = tangEntity.superEntity;
+//			var parentEntity = tangEntity;
+			while (currentEntity !== null) {
+				for (Field currentField: currentEntity.fields) {
+					visitedFields.add(currentField);
+				}
+//			parentEntity = currentEntity;
+				currentEntity = currentEntity.superEntity;
+			}
+			return visitedFields;
+		} else {
+			return null;
+		}
 	}
 
 }
