@@ -84,6 +84,7 @@ class TangTypeToJavaTypeConverter {
 			BasicDecimalType case (basicType instanceof BasicDecimalType): {"Decimal"}
 			BasicBooleanType case (basicType instanceof BasicBooleanType): {"Boolean"}
 			BasicDateType case (basicType instanceof BasicDateType): {"Date"}
+			BasicTimeType case (basicType instanceof BasicTimeType): {"Instant"}
 			BasicDateTimeType case (basicType instanceof BasicDateTimeType): {"DateTime"}
 			default: {
 				"BasicType - unknown"
@@ -98,6 +99,7 @@ class TangTypeToJavaTypeConverter {
 			SubDecimalType case (subType instanceof SubDecimalType): {"Decimal"}
 			SubBooleanType case (subType instanceof SubBooleanType): {"Boolean"}
 			SubDateType case (subType instanceof SubDateType): {"Date"}
+			SubTimeType case (basicType instanceof SubTimeType): {"Instant"}
 			SubDateTimeType case (subType instanceof SubDateTimeType): {"DateTime"}
 			default: {
 				"SubType - unknown"
