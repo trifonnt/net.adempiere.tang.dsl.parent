@@ -62,7 +62,8 @@ class TangGenerator extends AbstractGenerator {
 		}
 
 		//-03) Generate XML file with DB Migration(Liquibase)
-		
+
+		//-04) Generate finders(Java interfaces) for Spring repository 
 	}
 
 	def generateJavaClass(TangEntity entity) {
