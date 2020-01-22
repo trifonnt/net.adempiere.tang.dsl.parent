@@ -62,7 +62,14 @@ class TangGenerator extends AbstractGenerator {
 		}
 
 		//-03) Generate XML file with DB Migration(Liquibase)
-
+		for (tangPackage : resource.allContents.toIterable.filter(TangPackageDeclaration)) {
+			for (entity : tangPackage.elements.filter(TangEntity)) {
+				fsa.generateFile(
+					entity.fullyQualifiedName.toString("/") + ".liquibase.xml"
+					, entity.generateLiquibaseFile
+				)
+			}
+		}
 		//-04) Generate finders(Java interfaces) for Spring repository 
 	}
 
@@ -118,4 +125,36 @@ class TangGenerator extends AbstractGenerator {
 			
 //		}
 	}
+
+	def generateLiquibaseFile(TangEntity entity) {
+		'''
+		public class «entity.name» «IF entity.superEntity !== null»extends «entity.superEntity.fullyQualifiedName» «ENDIF»{
+		
+		<changeSet author="liquibase-docs" id="createTable-example">
+			<createTable catalogName="cat"
+				tableName="person">
+		«FOR field: entity.fields»
+			«field.generateLiquibaseColumn»
+		«ENDFOR»
+			</createTable>
+		</changeSet>
+
+		«FOR field: entity.fields»
+			«field.generateJavaGetterAndSetter»
+		«ENDFOR»
+		}
+		'''
+	}
+	def generateLiquibaseColumn(Field f) {
+		'''
+			<column name="address" type="varchar(255)"/>
+			
+			private «IF f.fieldType instanceof TangAbstractEntity»transient «ENDIF»«f.fieldType.toJavaType» «f.name»;
+			«IF f.fieldType instanceof TangAbstractEntity»
+			«val fieldType = f.fieldType as TangAbstractEntity»
+			private «fieldType.toJavaTypeOfPrimaryKey» «f.name»Id;
+			«ENDIF»
+		'''
+	}
+
 }
