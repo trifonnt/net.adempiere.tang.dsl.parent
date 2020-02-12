@@ -15,6 +15,7 @@ import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.scoping.Scopes
 import org.eclipse.xtext.scoping.impl.FilteringScope
 import net.adempiere.tang.dsl.tang.UniqueCombination
+import net.adempiere.tang.dsl.tang.EntityFinderParameter
 
 /**
  * This class contains custom scoping description.
@@ -56,6 +57,19 @@ class TangScopeProvider extends AbstractTangScopeProvider {
 		) {
 			val uniqueCombination = context as UniqueCombination;
 			val tangEntity = uniqueCombination.eContainer as TangEntity;
+			if (tangEntity !== null) {
+				var visibleFields = collectFieldFromEntityHierarchy(tangEntity);
+
+				val existingScope = Scopes.scopeFor(visibleFields);
+				return existingScope;
+			}
+		}
+		// Entity - EntityFinderParameter
+		if (context instanceof EntityFinderParameter
+			&& reference == TangPackage.Literals.ENTITY_FINDER_PARAMETER
+		) {
+			val entityFinderParameter = context as EntityFinderParameter;
+			val tangEntity = entityFinderParameter.eContainer as TangEntity;
 			if (tangEntity !== null) {
 				var visibleFields = collectFieldFromEntityHierarchy(tangEntity);
 

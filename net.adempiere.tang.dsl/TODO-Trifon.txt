@@ -13,7 +13,7 @@
 -02.3) Oracle
 
 
--03) Max characters of Table and Column names:
+-03) Find MAX characters of Table and Column names:
 -03.1) PostgreSQL
 -03.2) MySQL
 -03.3) Oracle

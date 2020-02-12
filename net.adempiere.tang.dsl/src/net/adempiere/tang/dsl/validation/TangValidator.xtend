@@ -31,6 +31,7 @@ class TangValidator extends AbstractTangValidator {
 	public static val INVALID_ATTRIBUTE_NAME = ISSUE_CODE_PREFIX + "InvalidAttributeName";
 
 	public static val DUPLICATE_FIELD_NAME = ISSUE_CODE_PREFIX + "DuplicateFieldName";
+	public static val DUPLICATE_COLUMN_NAME = ISSUE_CODE_PREFIX + "DuplicateColumnName";
 
 	public static val INVALID_NAME = ISSUE_CODE_PREFIX + 'InvalidName';
 
@@ -101,9 +102,40 @@ class TangValidator extends AbstractTangValidator {
 			parentEntity = currentEntity;
 			currentEntity = currentEntity.superEntity;
 		}
-		
 	}
-
+// - Check is there is duplicated Entity column names in the whole Entity hierarchy!
+	@Check
+	def checkUniquesOfEntityColumnNames(TangEntity tangEntity) {
+		var visitedColumns = newHashSet();
+		for (Field currentField : tangEntity.fields) {
+			if (visitedColumns.contains(currentField.columnName.toUpperCase)) {
+				error("Duplicate column name '"+currentField.columnName+"' in entity '"+ tangEntity.name +"'"
+					, TangPackage.Literals.TANG_ENTITY__FIELDS
+					, DUPLICATE_COLUMN_NAME // issue code
+					, currentField.name // issue data
+				);
+				return;
+			}
+			visitedColumns.add(currentField.columnName.toUpperCase);
+		}
+		var currentEntity = tangEntity.superEntity;
+		var parentEntity = tangEntity;
+		while (currentEntity !== null) {
+			for (Field currentField: currentEntity.fields) {
+				if (visitedColumns.contains(currentField.columnName.toUpperCase)) {
+					error("Duplicate column name '"+currentField.columnName+"' in entity '"+ parentEntity.name +"'"
+						, TangPackage.Literals.TANG_ENTITY__FIELDS
+						, DUPLICATE_COLUMN_NAME // issue code
+						, currentField.name    // issue data
+					);
+					return;
+				}
+				visitedColumns.add(currentField.columnName.toUpperCase);
+			}
+			parentEntity = currentEntity;
+			currentEntity = currentEntity.superEntity;
+		}
+	}
 
 // - Capital letter validations
 	@Check

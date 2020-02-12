@@ -14,6 +14,10 @@ import org.eclipse.xtext.naming.IQualifiedNameProvider
 import net.adempiere.tang.dsl.tang.Field
 import net.adempiere.tang.dsl.tang.TangType
 import net.adempiere.tang.dsl.tang.TangAbstractEntity
+import net.adempiere.tang.dsl.tang.TangAbstractType
+import net.adempiere.tang.dsl.tang.BasicType
+import net.adempiere.tang.dsl.tang.SubType
+import net.adempiere.tang.dsl.tang.BasicIntegerType
 
 /**
  * Generates code from your model files on save.
@@ -27,7 +31,13 @@ class TangGenerator extends AbstractGenerator {
 	extension IQualifiedNameProvider
 
 	@Inject // @Trifon
-	extension TangTypeToJavaTypeConverter typeRepresentation;
+	extension TangTypeToJavaTypeConverter javaTypeRepresentation;
+
+	@Inject // @Trifon
+	extension TangTypeToDbTypeConverter dbTypeRepresentation;
+
+	@Inject // @Trifon
+	extension StringUtils stringUtils;
 
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
@@ -54,7 +64,7 @@ class TangGenerator extends AbstractGenerator {
 			for (entity : tangPackage.elements.filter(TangEntity)) {
 				fsa.generateFile(
 //					tangPackage.name + '/' + entity.name +'.java'
-					entity.fullyQualifiedName.toString("/") + ".java"
+					"src/main/" + entity.fullyQualifiedName.toString("/") + ".java"
 //					, "public class "+entity.name + " { }"
 					, entity.generateJavaClass
 				)
@@ -65,7 +75,7 @@ class TangGenerator extends AbstractGenerator {
 		for (tangPackage : resource.allContents.toIterable.filter(TangPackageDeclaration)) {
 			for (entity : tangPackage.elements.filter(TangEntity)) {
 				fsa.generateFile(
-					entity.fullyQualifiedName.toString("/") + ".liquibase.xml"
+					"src/main/resources/config/liquibase/changelog/" +	entity.name + ".liquibase.xml" // entity.fullyQualifiedName.toString("/") + ".liquibase.xml"
 					, entity.generateLiquibaseFile
 				)
 			}
@@ -128,32 +138,73 @@ class TangGenerator extends AbstractGenerator {
 
 	def generateLiquibaseFile(TangEntity entity) {
 		'''
-		public class «entity.name» «IF entity.superEntity !== null»extends «entity.superEntity.fullyQualifiedName» «ENDIF»{
+		<?xml version="1.0" encoding="utf-8"?>
+		<databaseChangeLog
+				xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd
+														http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 		
-		<changeSet author="liquibase-docs" id="createTable-example">
-			<createTable catalogName="cat"
-				tableName="person">
+			<property name="now" value="now()" dbms="h2"/>
+		
+			<property name="now" value="current_timestamp" dbms="postgresql"/>
+		
+			<property name="floatType" value="float4" dbms="postgresql, h2"/>
+			<property name="floatType" value="float" dbms="mysql, oracle, mssql"/>
+		
+			<changeSet author="TrifonTrifonov" id="createTable-«entity.tableName.removeQuotes»">
+				<createTable tableName=«entity.tableName»>
 		«FOR field: entity.fields»
 			«field.generateLiquibaseColumn»
 		«ENDFOR»
-			</createTable>
-		</changeSet>
-
-		«FOR field: entity.fields»
-			«field.generateJavaGetterAndSetter»
-		«ENDFOR»
-		}
+				</createTable>
+		«IF entity.primaryKey !== null»
+			«entity.generateLiquibasePrimaryKey»
+		«ENDIF»
+			</changeSet>
+		</databaseChangeLog>
 		'''
 	}
+//«val fieldType = f.fieldType as TangAbstractType»
 	def generateLiquibaseColumn(Field f) {
-		'''
-			<column name="address" type="varchar(255)"/>
+		var nullable = false;
+		if (f.fieldType instanceof TangAbstractType && f.fieldType instanceof TangType && (f.fieldType instanceof BasicType || f.fieldType instanceof SubType)) {
+
+			if (f.fieldType instanceof SubType) {
+				val fieldType = f.fieldType as SubType;
+				if (fieldType.allowNull) {
+					nullable = true;
+				}
+			} else {
+				val fieldType = f.fieldType as BasicType;
+				if (fieldType.allowNull) {
+					nullable = true;
+				}
+			}
 			
-			private «IF f.fieldType instanceof TangAbstractEntity»transient «ENDIF»«f.fieldType.toJavaType» «f.name»;
-			«IF f.fieldType instanceof TangAbstractEntity»
-			«val fieldType = f.fieldType as TangAbstractEntity»
-			private «fieldType.toJavaTypeOfPrimaryKey» «f.name»Id;
-			«ENDIF»
+			if (f.fieldType instanceof BasicIntegerType) {
+				val fieldType = f.fieldType as BasicIntegerType;
+				fieldType.defaultValue
+			}
+		}
+		'''			<column name="«f.columnName»" type="«f.fieldType.toDbType»">
+				<constraints nullable="«nullable»" />
+			</column>
+		'''
+	}
+
+	def generateLiquibasePrimaryKey(TangEntity entity) {
+		var primaryKeyNames = entity.primaryKey.fields
+//					.filter(TangEntity)
+					.map[columnName]
+					.join(', ');
+		var primaryKeyName = entity.primaryKey.name;
+		'''		<addPrimaryKey 
+			columnNames="«primaryKeyNames»"
+			constraintName="«primaryKeyName»"
+			tableName="«entity.tableName.removeQuotes»"
+			validate="true"/>
 		'''
 	}
 
