@@ -39,6 +39,8 @@ class TangGenerator extends AbstractGenerator {
 	@Inject // @Trifon
 	extension StringUtils stringUtils;
 
+	String comma = ""; // GLOBAL field to store if comma is already used! I did not found another way to solve it!!!
+
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		//+01) Generate tiny documentation.
@@ -64,13 +66,14 @@ class TangGenerator extends AbstractGenerator {
 			for (entity : tangPackage.elements.filter(TangEntity)) {
 				fsa.generateFile(
 //					tangPackage.name + '/' + entity.name +'.java'
-					"src/main/" + entity.fullyQualifiedName.toString("/") + ".java"
+					"src/main/java/" + entity.fullyQualifiedName.toString("/") + ".java"
 //					, "public class "+entity.name + " { }"
-					, entity.generateJavaClass
+					, entity.generateJavaDomainClass
 				)
 			}
 		}
 
+		// TODO
 		//-03) Generate XML file with DB Migration(Liquibase)
 		for (tangPackage : resource.allContents.toIterable.filter(TangPackageDeclaration)) {
 			for (entity : tangPackage.elements.filter(TangEntity)) {
@@ -80,15 +83,61 @@ class TangGenerator extends AbstractGenerator {
 				)
 			}
 		}
+
+		// TODO
 		//-04) Generate finders(Java interfaces) for Spring repository 
+
+		// TODO
+		//-05) Generate DTO classes
+		for (tangPackage : resource.allContents.toIterable.filter(TangPackageDeclaration)) {
+			for (entity : tangPackage.elements.filter(TangEntity)) {
+				fsa.generateFile(
+					"src/main/java/" + tangPackage.name.replaceAll("\\.", "/") + "/service/dto/" + entity.name +"DTO.java"
+//				"src/main/java/" + entity.fullyQualifiedName.toString("/") + "DTO.java"
+					, entity.generateJavaDTOClass
+				)
+			}
+		}
+
 	}
 
-	def generateJavaClass(TangEntity entity) {
+	def generateJavaDTOClass(TangEntity entity) {
 		'''
 		«IF entity.eContainer.fullyQualifiedName !== null»
 		package «entity.eContainer.fullyQualifiedName»;
 		
 		«ENDIF»
+		import java.util.Objects;
+		
+		public class «entity.name»DTO «IF entity.superEntity !== null»extends «entity.superEntity.fullyQualifiedName» «ENDIF»implements Serializable {
+		
+			private static final long serialVersionUID = 1L;
+		
+		«FOR field: entity.fields»
+			«field.generateJavaField»
+		«ENDFOR»
+
+		«FOR field: entity.fields»
+			«field.generateJavaGetterAndSetter»
+		«ENDFOR»
+		
+		«generateJavaDTOClassEqualsMethod(entity)»
+		
+		«generateJavaHashCodeMethod(entity)»
+		
+		«generateJavaToStringMethod(entity, "DTO")»
+		}
+		'''
+	}
+
+	def generateJavaDomainClass(TangEntity entity) {
+		'''
+		«IF entity.eContainer.fullyQualifiedName !== null»
+		package «entity.eContainer.fullyQualifiedName»;
+		
+		«ENDIF»
+		import java.util.Objects;
+		
 		public class «entity.name» «IF entity.superEntity !== null»extends «entity.superEntity.fullyQualifiedName» «ENDIF»{
 		
 		«FOR field: entity.fields»
@@ -98,13 +147,101 @@ class TangGenerator extends AbstractGenerator {
 		«FOR field: entity.fields»
 			«field.generateJavaGetterAndSetter»
 		«ENDFOR»
+
+		«generateJavaDomainClassEqualsMethod(entity)»
+		
+		«generateJavaHashCodeMethod(entity)»
+		
+		«generateJavaToStringMethod(entity, "")»
 		}
 		'''
 	}
 
-	def generateJavaField(Field f) {
+	def generateJavaDTOClassEqualsMethod(TangEntity entity) {
 		'''
-		
+		@Override
+			public boolean equals(Object o) {
+				if (this == o) {
+					return true;
+				}
+				if (o == null || getClass() != o.getClass()) {
+					return false;
+				}
+
+				«entity.name»DTO «entity.name.toFirstLower»DTO = («entity.name»DTO) o;
+				if («entity.name.toFirstLower»DTO.getId() == null || getId() == null) {
+					return false;
+				}
+				return Objects.equals(getId(), «entity.name.toFirstLower»DTO.getId());
+			}
+		'''
+	}
+
+	def generateJavaDomainClassEqualsMethod(TangEntity entity) {
+		'''
+		@Override
+			public boolean equals(Object o) {
+				if (this == o) {
+					return true;
+				}
+				if (o == null || getClass() != o.getClass()) {
+					return false;
+				}
+
+				«entity.name» «entity.name.toFirstLower» = («entity.name») o;
+				if («entity.name.toFirstLower».getId() == null || getId() == null) {
+					return false;
+				}
+				return Objects.equals(getId(), «entity.name.toFirstLower».getId());
+			}
+		'''
+	}
+
+	def generateJavaHashCodeMethod(TangEntity entity) {
+		'''
+		@Override
+			public int hashCode() {
+				return Objects.hashCode(getId());
+			}
+		'''
+	}
+
+	def generateJavaToStringMethod(TangEntity entity, String suffix) {
+//		var String comma = "";
+		comma = ""; // nullify COMMA before usage!
+		'''
+		@Override
+			public String toString() {
+				return "«entity.name»«suffix» {" +
+					«FOR field: entity.fields»
+						«generateJavaToStringField(field)»
+					«ENDFOR»
+					"}";
+			}
+		'''
+	}
+	def generateJavaToStringField(Field field) {
+		var result = 
+'''
+		"«comma»«field.name»=" + get«field.name.toFirstUpper»() +
+'''
+		if (comma.empty) {
+			comma = ", ";
+		}
+		return result;
+	}
+
+
+	def generateJavaField(Field f) {
+		var String nullableAnnotation = null;
+		if (f.fieldType instanceof TangType) {
+			val fieldType = f.fieldType as TangType;
+			if (!fieldType.allowNull) {
+				nullableAnnotation = "\r\n	@NotNull\r\n";
+			}
+		}
+		'''
+		«nullableAnnotation»
 			private «IF f.fieldType instanceof TangAbstractEntity»transient «ENDIF»«f.fieldType.toJavaType» «f.name»;
 			«IF f.fieldType instanceof TangAbstractEntity»
 			«val fieldType = f.fieldType as TangAbstractEntity»
