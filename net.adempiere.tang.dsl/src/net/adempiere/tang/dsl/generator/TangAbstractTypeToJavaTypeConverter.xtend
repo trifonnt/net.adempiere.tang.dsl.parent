@@ -26,7 +26,7 @@ import net.adempiere.tang.dsl.tang.TangEntityViewNative
 import net.adempiere.tang.dsl.tang.TangType
 
 // @Trifon
-class TangTypeToJavaTypeConverter {
+class TangAbstractTypeToJavaTypeConverter {
 
 	def toJavaType(TangAbstractType abstractType) {
 		switch (abstractType) {
@@ -60,6 +60,7 @@ class TangTypeToJavaTypeConverter {
 		return abstractEntity.name; // old: return "TangAbstractEntity - unknown" + abstractEntity.name;
 	//	TangEntity | TangEntityViewNative | TangEntityView
 	}
+
 	def toJavaTypeOfPrimaryKey(TangAbstractEntity abstractEntity) {
 		switch (abstractEntity) {
 			TangEntity case (abstractEntity instanceof TangEntity): {
@@ -77,6 +78,7 @@ class TangTypeToJavaTypeConverter {
 		}
 	//	TangEntity | TangEntityViewNative | TangEntityView
 	}
+
 	def toJavaType(BasicType basicType) {
 		switch (basicType) {
 			BasicStringType case (basicType instanceof BasicStringType): {basicType.javaType}

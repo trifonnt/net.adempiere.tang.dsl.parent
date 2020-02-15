@@ -20,13 +20,10 @@ import net.adempiere.tang.dsl.tang.SubTimeType
 import net.adempiere.tang.dsl.tang.SubType
 import net.adempiere.tang.dsl.tang.TangAbstractEntity
 import net.adempiere.tang.dsl.tang.TangAbstractType
-import net.adempiere.tang.dsl.tang.TangEntity
-import net.adempiere.tang.dsl.tang.TangEntityView
-import net.adempiere.tang.dsl.tang.TangEntityViewNative
 import net.adempiere.tang.dsl.tang.TangType
 
 // @Trifon
-class TangTypeToDbTypeConverter {
+class TangAbstractTypeToDbTypeConverter {
 
 	def toDbType(TangAbstractType abstractType) {
 		switch (abstractType) {
@@ -60,23 +57,7 @@ class TangTypeToDbTypeConverter {
 		return abstractEntity.name; // old: return "TangAbstractEntity - unknown" + abstractEntity.name;
 	//	TangEntity | TangEntityViewNative | TangEntityView
 	}
-	def toDbTypeOfPrimaryKey(TangAbstractEntity abstractEntity) {
-		switch (abstractEntity) {
-			TangEntity case (abstractEntity instanceof TangEntity): {
-				toDbType(abstractEntity?.primaryKey.fields.get(0).fieldType)
-			}
-			TangEntityView case (abstractEntity instanceof TangEntityView): {
-				Long; // TODO - Hardcoded!!!
-			}
-			TangEntityViewNative case (abstractEntity instanceof TangEntityViewNative): {
-				Long; // TODO - Hardcoded!!!
-			}
-			default: {
-				"TangAbstractEntity - unknown -- toDbType()"
-			}
-		}
-	//	TangEntity | TangEntityViewNative | TangEntityView
-	}
+
 	def toDbType(BasicType basicType) {
 		switch (basicType) {
 			BasicStringType case (basicType instanceof BasicStringType): {basicType.dbType} // "VARCHAR(255)"

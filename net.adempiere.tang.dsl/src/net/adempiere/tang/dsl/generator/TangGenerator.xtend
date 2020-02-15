@@ -31,13 +31,17 @@ class TangGenerator extends AbstractGenerator {
 	extension IQualifiedNameProvider
 
 	@Inject // @Trifon
-	extension TangTypeToJavaTypeConverter javaTypeRepresentation;
+	extension TangAbstractTypeToJavaTypeConverter javaTypeRepresentation;
 
 	@Inject // @Trifon
-	extension TangTypeToDbTypeConverter dbTypeRepresentation;
+	extension TangAbstractTypeToDbTypeConverter dbTypeRepresentation;
 
 	@Inject // @Trifon
 	extension StringUtils stringUtils;
+
+	@Inject
+	extension IsQuotationMarkRequiredDecisionMaker quotationMarkRequiredDecisionMaker;
+
 
 	String comma = ""; // GLOBAL field to store if comma is already used! I did not found another way to solve it!!!
 
@@ -87,7 +91,7 @@ class TangGenerator extends AbstractGenerator {
 		// TODO
 		//-04) Generate finders(Java interfaces) for Spring repository 
 
-		// TODO
+
 		//-05) Generate DTO classes
 		for (tangPackage : resource.allContents.toIterable.filter(TangPackageDeclaration)) {
 			for (entity : tangPackage.elements.filter(TangEntity)) {
@@ -107,12 +111,13 @@ class TangGenerator extends AbstractGenerator {
 		package «entity.eContainer.fullyQualifiedName»;
 		
 		«ENDIF»
+		import java.io.Serializable;
 		import java.util.Objects;
+		import javax.validation.constraints.*;
 		
 		public class «entity.name»DTO «IF entity.superEntity !== null»extends «entity.superEntity.fullyQualifiedName» «ENDIF»implements Serializable {
 		
 			private static final long serialVersionUID = 1L;
-		
 		«FOR field: entity.fields»
 			«field.generateJavaField»
 		«ENDFOR»
@@ -136,10 +141,27 @@ class TangGenerator extends AbstractGenerator {
 		package «entity.eContainer.fullyQualifiedName»;
 		
 		«ENDIF»
+		import com.fasterxml.jackson.annotation.JsonIgnore;
+		import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+		import org.hibernate.annotations.Cache;
+		import org.hibernate.annotations.CacheConcurrencyStrategy;
+		
+		import javax.persistence.*;
+		import javax.validation.constraints.*;
+		
+		import org.springframework.data.elasticsearch.annotations.Document;
+		import java.io.Serializable;
+		import java.util.HashSet;
+		import java.util.Set;
 		import java.util.Objects;
 		
-		public class «entity.name» «IF entity.superEntity !== null»extends «entity.superEntity.fullyQualifiedName» «ENDIF»{
+		@Entity
+		@Table(name = "«entity.tableName.removeQuotes»")
+		@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+		@Document(indexName = "«entity.name.toLowerCase»")
+		public class «entity.name» «IF entity.superEntity !== null»extends «entity.superEntity.fullyQualifiedName» «ENDIF»implements Serializable {
 		
+			private static final long serialVersionUID = 1L;
 		«FOR field: entity.fields»
 			«field.generateJavaField»
 		«ENDFOR»
@@ -221,10 +243,18 @@ class TangGenerator extends AbstractGenerator {
 		'''
 	}
 	def generateJavaToStringField(Field field) {
+		var quotationMark = "";
+		var quotationMarkAndPlus = "";
+		if (field.fieldType.isQuotationMarkRequired) {
+			quotationMark = "'";
+			quotationMarkAndPlus = " \"'\" +";
+		}
+		
 		var result = 
 '''
-		"«comma»«field.name»=" + get«field.name.toFirstUpper»() +
+		"«comma»«field.name»=«quotationMark»" + get«field.name.toFirstUpper»() +«quotationMarkAndPlus»
 '''
+		// Set proper value of COMMA
 		if (comma.empty) {
 			comma = ", ";
 		}
@@ -237,10 +267,11 @@ class TangGenerator extends AbstractGenerator {
 		if (f.fieldType instanceof TangType) {
 			val fieldType = f.fieldType as TangType;
 			if (!fieldType.allowNull) {
-				nullableAnnotation = "\r\n	@NotNull\r\n";
+				nullableAnnotation = "	@NotNull";
 			}
 		}
 		'''
+
 		«nullableAnnotation»
 			private «IF f.fieldType instanceof TangAbstractEntity»transient «ENDIF»«f.fieldType.toJavaType» «f.name»;
 			«IF f.fieldType instanceof TangAbstractEntity»
