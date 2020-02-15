@@ -18,6 +18,8 @@ import net.adempiere.tang.dsl.tang.TangAbstractType
 import net.adempiere.tang.dsl.tang.BasicType
 import net.adempiere.tang.dsl.tang.SubType
 import net.adempiere.tang.dsl.tang.BasicIntegerType
+import net.adempiere.tang.dsl.tang.BasicStringType
+import net.adempiere.tang.dsl.tang.SubStringType
 
 /**
  * Generates code from your model files on save.
@@ -38,6 +40,9 @@ class TangGenerator extends AbstractGenerator {
 
 	@Inject // @Trifon
 	extension StringUtils stringUtils;
+
+	@Inject // @Trifon
+	extension TangTypeUtils tangTypeUtils;
 
 	@Inject
 	extension IsQuotationMarkRequiredDecisionMaker quotationMarkRequiredDecisionMaker;
@@ -304,6 +309,21 @@ class TangGenerator extends AbstractGenerator {
 		var defaultValue = "";
 		if (field?.defaultCalculationMethod?.defaultValueConstant !== null) {
 			defaultValue = " = " + field?.defaultCalculationMethod?.defaultValueConstant;
+		} else {
+			// Read default value from fieldType
+			if (field.fieldType instanceof BasicType) {
+				val fieldType = field.fieldType as BasicType;
+				if (fieldType.extractDefaultValue !== null) {
+					defaultValue = " = " + fieldType.extractDefaultValue.toString;
+				}
+			}
+			if (field.fieldType instanceof SubType) {
+				val fieldType = field.fieldType as SubType;
+				if (fieldType.extractDefaultValue !== null) {
+					defaultValue = " = " + fieldType.extractDefaultValue.toString;
+				}
+			}
+			
 		}
 		
 		var result = 

@@ -30,11 +30,20 @@ TangModule:
 	(tangPackages+=TangPackageDeclaration)*
 ;
 
-terminal LONG returns ecore::ELong: ('-'|'+')? ('0'..'9')+ 'l';
+//terminal LONG returns ecore::ELong: ('-'|'+')? ('0'..'9')+ 'l';
+// @Trifon
+terminal LONG_OBJECT returns ecore::ELongObject: ('-'|'+')? ('0'..'9')+ 'L';
+
 @Override
 terminal INT returns ecore::EInt: ('-'|'+')? ('0'..'9')+;
 // @Trifon
+terminal INTEGER returns ecore::EIntegerObject: ('-'|'+')? ('0'..'9')+ 'i';
+
+// @Trifon
 terminal BOOLEAN returns ecore::EBoolean: ('true'|'false');
+terminal BOOLEAN_OBJECT returns ecore::EBooleanObject: ('Boolean.TRUE'|'Boolean.FALSE');
+// @Trifon - TODO - how to add |'Boolean.TRUE'|'Boolean.FALSE'
+//terminal BOOLEAN_DEFAULT_VALUES returns ecore::EBoolean: ('true'|'false');
 
 TangPackageDeclaration:
 	'package' name=QualifiedName '{'
@@ -101,7 +110,7 @@ BasicStringType:
 	'}'
 ;
 SubStringType:
-	'sub-string-type' name=ID ('extends' superType=[BasicStringType|QualifiedName]) '{'
+	'sub-string-type' name=ID 'extends' superType=[BasicStringType|QualifiedName] '{'
 		('max-length' '=' maxLength=INT)?
 		('allow-null' '=' allowNull=BOOLEAN)?
 		('default-value' '=' defaultValue=STRING)?
@@ -120,7 +129,7 @@ BasicIntegerType:
 	'}'
 ;
 SubIntegerType:
-	'sub-integer-type' name=ID ('extends' superType=[BasicIntegerType|QualifiedName]) '{'
+	'sub-integer-type' name=ID 'extends' superType=[BasicIntegerType|QualifiedName] '{'
 		('max-digits' '=' maxDigits=INT)? 
 		('allow-null' '=' allowNull=BOOLEAN)?
 		('min-value' '=' minValue=INT)? // TODO - Allow user to enter CONSTANT --> 'Integer.MIN_VALUE'|'Integer.MAX_VALUE'|
@@ -135,18 +144,18 @@ BasicLongType:
 		'db-type' '=' dbType=STRING
 		'max-digits' '=' maxLength=INT 
 		('allow-null' '=' allowNull=BOOLEAN)
-		('min-value' '=' minValue=LONG)?
-		('max-value' '=' maxValue=LONG)?
-		('default-value' '=' defaultValue=LONG)?
+		('min-value' '=' minValue=LONG_OBJECT)?
+		('max-value' '=' maxValue=LONG_OBJECT)?
+		('default-value' '=' defaultValue=LONG_OBJECT)?
 	'}'
 ;
 SubLongType:
-	'sub-long-type' name=ID ('extends' superType=[BasicLongType|QualifiedName]) '{'
+	'sub-long-type' name=ID 'extends' superType=[BasicLongType|QualifiedName] '{'
 		('max-digits' '=' maxDigits=INT)? 
 		('allow-null' '=' allowNull=BOOLEAN)?
-		('min-value' '=' minValue=LONG)?
-		('max-value' '=' maxValue=LONG)?
-		('default-value' '=' defaultValue=LONG)?
+		('min-value' '=' minValue=LONG_OBJECT)?
+		('max-value' '=' maxValue=LONG_OBJECT)?
+		('default-value' '=' defaultValue=LONG_OBJECT)?
 	'}'
 ;
 
@@ -155,13 +164,13 @@ BasicBooleanType:
 		'java-type' '=' javaType=STRING
 		'db-type' '=' dbType=STRING
 		('allow-null' '=' allowNull=BOOLEAN)
-		('default-value' '=' defaultValue=STRING)?
+		('default-value' '=' defaultValue=BOOLEAN)?
 	'}'
 ;
 SubBooleanType:
-	'sub-boolean-type' name=ID ('extends' superType=[BasicBooleanType|QualifiedName]) '{'
+	'sub-boolean-type' name=ID 'extends' superType=[BasicBooleanType|QualifiedName] '{'
 		('allow-null' '=' allowNull=BOOLEAN)?
-		('default-value' '=' defaultValue=STRING)?
+		('default-value' '=' defaultValue=BOOLEAN)?
 	'}'
 ;
 
@@ -177,7 +186,7 @@ BasicDecimalType:
 	'}'
 ;
 SubDecimalType:
-	'sub-decimal-type' name=ID ('extends' superType=[BasicDecimalType|QualifiedName]) '{'
+	'sub-decimal-type' name=ID 'extends' superType=[BasicDecimalType|QualifiedName] '{'
 		('max-digits' '=' maxDigits=INT)? 
 		('allow-null' '=' allowNull=BOOLEAN)?
 		('min-value' '=' minValue=INT)?
@@ -195,7 +204,7 @@ BasicDateType:
 	'}'
 ;
 SubDateType:
-	'sub-date-type' name=ID ('extends' superType=[BasicDateType|QualifiedName]) '{'
+	'sub-date-type' name=ID 'extends' superType=[BasicDateType|QualifiedName] '{'
 		('allow-null' '=' allowNull=BOOLEAN)?
 		('default-value' '=' defaultValue=STRING)?
 	'}'
@@ -210,7 +219,7 @@ BasicTimeType:
 	'}'
 ;
 SubTimeType:
-	'sub-time-type' name=ID ('extends' superType=[BasicTimeType|QualifiedName]) '{'
+	'sub-time-type' name=ID 'extends' superType=[BasicTimeType|QualifiedName] '{'
 		('allow-null' '=' allowNull=BOOLEAN)?
 		('default-value' '=' defaultValue=STRING)?
 	'}'
@@ -225,7 +234,7 @@ BasicDateTimeType:
 	'}'
 ;
 SubDateTimeType:
-	'sub-date-time-type' name=ID ('extends' superType=[BasicDateTimeType|QualifiedName]) '{'
+	'sub-date-time-type' name=ID 'extends' superType=[BasicDateTimeType|QualifiedName] '{'
 		(allowNull?='allow-null')?
 		('default-value' '=' defaultValue=STRING)?
 	'}'
