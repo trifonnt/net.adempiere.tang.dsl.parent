@@ -292,7 +292,7 @@ Field:
 ;
 
 DefaultCalculationMethod:
-	  ('default-value-constant' '=' defaultValue=STRING)
+	  ('default-value-constant' '=' defaultValueConstant=STRING)
 	| ('default-value-calculator' '=' defaultValueCalculator=[TangDefaultValueCalculator|QualifiedName])
 	| ('default-value-expression' '=' defaultValueExpression=STRING) // TODO: Change it to non String expression!
 ;

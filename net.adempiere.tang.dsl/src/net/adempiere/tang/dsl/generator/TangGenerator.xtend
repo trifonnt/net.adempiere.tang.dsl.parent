@@ -119,11 +119,13 @@ class TangGenerator extends AbstractGenerator {
 		
 			private static final long serialVersionUID = 1L;
 		«FOR field: entity.fields»
-			«field.generateJavaField»
+		
+			«generateJavaFieldValidationAnnotations(field)»
+			«generateJavaField(field)»
 		«ENDFOR»
 
 		«FOR field: entity.fields»
-			«field.generateJavaGetterAndSetter»
+			«generateJavaGetterAndSetter(field)»
 		«ENDFOR»
 		
 		«generateJavaDTOClassEqualsMethod(entity)»
@@ -163,11 +165,14 @@ class TangGenerator extends AbstractGenerator {
 		
 			private static final long serialVersionUID = 1L;
 		«FOR field: entity.fields»
-			«field.generateJavaField»
+		
+			«generateJavaFieldValidationAnnotations(field)»
+			«generateJavaEntityFieldAnnotations(entity, field)»
+			«generateJavaField(field)»
 		«ENDFOR»
 
 		«FOR field: entity.fields»
-			«field.generateJavaGetterAndSetter»
+			«generateJavaGetterAndSetter(field)»
 		«ENDFOR»
 
 		«generateJavaDomainClassEqualsMethod(entity)»
@@ -262,23 +267,54 @@ class TangGenerator extends AbstractGenerator {
 	}
 
 
-	def generateJavaField(Field f) {
-		var String nullableAnnotation = null;
-		if (f.fieldType instanceof TangType) {
-			val fieldType = f.fieldType as TangType;
+	def generateJavaEntityFieldAnnotations(TangEntity entity, Field field) {
+		var String result = null;
+		var nullable = "";
+		var unique = "";
+
+		if (field.fieldType instanceof TangType) {
+			val fieldType = field.fieldType as TangType;
+			if (fieldType.allowNull) {
+				// ignore
+			} else {
+				nullable = ", nullable = false";
+			}
+
+			if (field?.defaultCalculationMethod?.defaultValueConstant !== null) {
+				unique = ", unique = true";
+			}
+
+			result = "@Column(name = \""+field.columnName+"\"" + nullable + unique +")";
+		}
+		return result;
+	}
+
+	def generateJavaFieldValidationAnnotations(Field field) {
+		var String result = null;
+		if (field.fieldType instanceof TangType) {
+			val fieldType = field.fieldType as TangType;
 			if (!fieldType.allowNull) {
-				nullableAnnotation = "	@NotNull";
+				result = "@NotNull";
 			}
 		}
-		'''
+		return result;
+	}
 
-		«nullableAnnotation»
-			private «IF f.fieldType instanceof TangAbstractEntity»transient «ENDIF»«f.fieldType.toJavaType» «f.name»;
-			«IF f.fieldType instanceof TangAbstractEntity»
-			«val fieldType = f.fieldType as TangAbstractEntity»
-			private «fieldType.toJavaTypeOfPrimaryKey» «f.name»Id;
+	def generateJavaField(Field field) {
+		var defaultValue = "";
+		if (field?.defaultCalculationMethod?.defaultValueConstant !== null) {
+			defaultValue = " = " + field?.defaultCalculationMethod?.defaultValueConstant;
+		}
+		
+		var result = 
+		'''
+			private «IF field.fieldType instanceof TangAbstractEntity»transient «ENDIF»«field.fieldType.toJavaType» «field.name»«defaultValue»;
+			«IF field.fieldType instanceof TangAbstractEntity»
+			«val fieldType = field.fieldType as TangAbstractEntity»
+			private «fieldType.toJavaTypeOfPrimaryKey» «field.name»Id;
 			«ENDIF»
 		'''
+		return result;
 	}
 	def generateJavaGetterAndSetter(Field f) {
 		'''
