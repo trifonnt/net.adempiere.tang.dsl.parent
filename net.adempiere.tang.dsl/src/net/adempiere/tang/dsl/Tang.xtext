@@ -235,7 +235,7 @@ BasicDateTimeType:
 ;
 SubDateTimeType:
 	'sub-date-time-type' name=ID 'extends' superType=[BasicDateTimeType|QualifiedName] '{'
-		(allowNull?='allow-null')?
+		(allowNull?='allow-null')? // TODO -decide this syntax or ('allow-null' '=' allowNull=BOOLEAN)?
 		('default-value' '=' defaultValue=STRING)?
 	'}'
 ;
@@ -295,7 +295,8 @@ CollectionEntityFinder:
 Field:
 //	fieldType=[TangType] name=ID // old version
 	name=ID ':' fieldType=[TangAbstractType] // old: fieldType=[TangType]
-	'db-column-name' '=' columnName=STRING 
+	'db-column-name' '=' columnName=STRING
+	('allow-null' '=' allowNull=BOOLEAN)? //TODO - Can be used only if type is TangType!!!
 	defaultCalculationMethod=DefaultCalculationMethod?
 	';'
 ;
@@ -353,7 +354,7 @@ TangDefaultValueCalculatorOld:
 TangWindow:
 	'window' name=ID
 	'human-name' '=' humanName=STRING
-	('human-description' '=' description=STRING)?
+	('description' '=' description=STRING)?
 	'{'
 		tabs+=Tab+
 	'}'
@@ -378,6 +379,6 @@ TabField:
 	'field' '=' field=[Field|QualifiedName]
 	'human-name' '=' humanName=STRING
 	('position' '=' position=INT)?
-	('human-description' '=' description=STRING)?
+	('description' '=' description=STRING)?
 	';'
 ;

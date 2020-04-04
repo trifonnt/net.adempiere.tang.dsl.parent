@@ -190,67 +190,63 @@ class TangGenerator extends AbstractGenerator {
 	}
 
 	def generateJavaDTOClassEqualsMethod(TangEntity entity) {
-		'''
-		@Override
-			public boolean equals(Object o) {
-				if (this == o) {
-					return true;
-				}
-				if (o == null || getClass() != o.getClass()) {
-					return false;
-				}
+'''	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-				«entity.name»DTO «entity.name.toFirstLower»DTO = («entity.name»DTO) o;
-				if («entity.name.toFirstLower»DTO.getId() == null || getId() == null) {
-					return false;
-				}
-				return Objects.equals(getId(), «entity.name.toFirstLower»DTO.getId());
-			}
-		'''
+		«entity.name»DTO «entity.name.toFirstLower»DTO = («entity.name»DTO) o;
+		if («entity.name.toFirstLower»DTO.getId() == null || getId() == null) {
+			return false;
+		}
+		return Objects.equals(getId(), «entity.name.toFirstLower»DTO.getId());
+	}
+'''
 	}
 
 	def generateJavaDomainClassEqualsMethod(TangEntity entity) {
-		'''
-		@Override
-			public boolean equals(Object o) {
-				if (this == o) {
-					return true;
-				}
-				if (o == null || getClass() != o.getClass()) {
-					return false;
-				}
+'''	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-				«entity.name» «entity.name.toFirstLower» = («entity.name») o;
-				if («entity.name.toFirstLower».getId() == null || getId() == null) {
-					return false;
-				}
-				return Objects.equals(getId(), «entity.name.toFirstLower».getId());
-			}
-		'''
+		«entity.name» «entity.name.toFirstLower» = («entity.name») o;
+		if («entity.name.toFirstLower».getId() == null || getId() == null) {
+			return false;
+		}
+		return Objects.equals(getId(), «entity.name.toFirstLower».getId());
+	}
+'''
 	}
 
 	def generateJavaHashCodeMethod(TangEntity entity) {
-		'''
-		@Override
-			public int hashCode() {
-				return Objects.hashCode(getId());
-			}
-		'''
+'''	@Override
+	public int hashCode() {
+		return Objects.hashCode(getId());
+	}
+'''
 	}
 
 	def generateJavaToStringMethod(TangEntity entity, String suffix) {
 //		var String comma = "";
 		comma = ""; // nullify COMMA before usage!
-		'''
-		@Override
-			public String toString() {
-				return "«entity.name»«suffix» {" +
-					«FOR field: entity.fields»
-						«generateJavaToStringField(field)»
-					«ENDFOR»
-					"}";
-			}
-		'''
+'''	@Override
+	public String toString() {
+		return "«entity.name»«suffix» {" +
+		«FOR field: entity.fields»
+			«generateJavaToStringField(field)»
+		«ENDFOR»
+		"}";
+	}
+'''
 	}
 	def generateJavaToStringField(Field field) {
 		var quotationMark = "";
@@ -261,8 +257,7 @@ class TangGenerator extends AbstractGenerator {
 		}
 		
 		var result = 
-'''
-		"«comma»«field.name»=«quotationMark»" + get«field.name.toFirstUpper»() +«quotationMarkAndPlus»
+'''	"«comma»«field.name»=«quotationMark»" + get«field.name.toFirstUpper»() +«quotationMarkAndPlus»
 '''
 		// Set proper value of COMMA
 		if (comma.empty) {
@@ -392,6 +387,7 @@ class TangGenerator extends AbstractGenerator {
 	}
 //«val fieldType = f.fieldType as TangAbstractType»
 	def generateLiquibaseColumn(Field f) {
+		var result = '''''';
 		var nullable = false;
 		if (f.fieldType instanceof TangAbstractType && f.fieldType instanceof TangType && (f.fieldType instanceof BasicType || f.fieldType instanceof SubType)) {
 
@@ -412,10 +408,11 @@ class TangGenerator extends AbstractGenerator {
 				fieldType.defaultValue
 			}
 		}
-		'''			<column name="«f.columnName»" type="«f.fieldType.toDbType»">
+		result = '''			<column name="«f.columnName»" type="«f.fieldType.toDbType»">
 				<constraints nullable="«nullable»" />
 			</column>
 		'''
+		return result;
 	}
 
 	def generateLiquibasePrimaryKey(TangEntity entity) {
