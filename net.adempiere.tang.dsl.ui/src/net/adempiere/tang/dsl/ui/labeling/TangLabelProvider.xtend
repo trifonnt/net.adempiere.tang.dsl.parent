@@ -7,7 +7,7 @@ import com.google.inject.Inject
 import net.adempiere.tang.dsl.tang.Field
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider
 import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider
-import net.adempiere.tang.dsl.generator.TangTypeToJavaTypeConverter
+import net.adempiere.tang.dsl.generator.TangAbstractTypeToJavaTypeConverter
 
 /**
  * Provides labels for EObjects.
@@ -18,7 +18,7 @@ class TangLabelProvider extends DefaultEObjectLabelProvider {
 
 	// @Trifon
 	@Inject
-	extension TangTypeToJavaTypeConverter tangTypeToJavaTypeConverter;
+	extension TangAbstractTypeToJavaTypeConverter tangTypeToJavaTypeConverter;
 
 	@Inject
 	new(AdapterFactoryLabelProvider delegate) {

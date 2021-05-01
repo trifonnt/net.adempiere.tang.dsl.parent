@@ -97,6 +97,7 @@ class TangGenerator extends AbstractGenerator {
 		//-04) Generate finders(Java interfaces) for Spring repository 
 
 
+		// TODO - finish this generation!
 		//-05) Generate DTO classes
 		for (tangPackage : resource.allContents.toIterable.filter(TangPackageDeclaration)) {
 			for (entity : tangPackage.elements.filter(TangEntity)) {
@@ -113,7 +114,7 @@ class TangGenerator extends AbstractGenerator {
 	def generateJavaDTOClass(TangEntity entity) {
 		'''
 		«IF entity.eContainer.fullyQualifiedName !== null»
-		package «entity.eContainer.fullyQualifiedName»;
+		package «entity.eContainer.fullyQualifiedName».service.dto;
 		
 		«ENDIF»
 		import java.io.Serializable;
@@ -359,11 +360,11 @@ class TangGenerator extends AbstractGenerator {
 		'''
 		<?xml version="1.0" encoding="utf-8"?>
 		<databaseChangeLog
-				xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-				xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd
-														http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+			xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+			xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd
+													http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 		
 			<property name="now" value="now()" dbms="h2"/>
 		

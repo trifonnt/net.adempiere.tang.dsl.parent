@@ -2,7 +2,7 @@
 <?eclipse version="3.0"?>
 <plugin>
 	<extension point="org.eclipse.emf.ecore.generated_package">
-		<package 
+		<package
 			uri = "http://www.adempiere.net/tang/dsl/Tang"
 			class = "net.adempiere.tang.dsl.tang.TangPackage"
 			genModel = "model/generated/Tang.genmodel" />

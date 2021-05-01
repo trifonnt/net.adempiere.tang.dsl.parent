@@ -21,9 +21,13 @@
 
 -04) TANG DSL:
 -04.1) (Validation) Do not allow duplicate table Names in the whole SYSTEM or per CUSTOMER!
+-04.2) (Autocomplete) "primary-key product_pk {id, id}" Do not allow duplicate column names in suggested values!
 
 
 -05) One Tang Project MUST contain only one .tang model file?
 
 
--06) 
+-06) Find hosting for Eclipse Plugin
+
+
+-07) 

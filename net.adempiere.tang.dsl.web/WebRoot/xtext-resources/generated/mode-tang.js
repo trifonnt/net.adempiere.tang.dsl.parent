@@ -1,6 +1,6 @@
 define(["ace/lib/oop", "ace/mode/text", "ace/mode/text_highlight_rules"], function(oop, mText, mTextHighlightRules) {
 	var HighlightRules = function() {
-		var keywords = "AS|as|entities|entity|extends|false|field|fields|import|level|package|position|sql|tab|true|where|window";
+		var keywords = "AS|Collection|List|Set|as|description|entities|entity|extends|field|fields|finders|import|level|package|position|sql|tab|where|window";
 		this.$rules = {
 			"start": [
 				{token: "comment", regex: "\\/\\/.*$"},
@@ -8,8 +8,8 @@ define(["ace/lib/oop", "ace/mode/text", "ace/mode/text_highlight_rules"], functi
 				{token: "string", regex: '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]'},
 				{token: "string", regex: "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']"},
 				{token: "constant.numeric", regex: "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b"},
-				{token: "lparen", regex: "[{]"},
-				{token: "rparen", regex: "[}]"},
+				{token: "lparen", regex: "[({]"},
+				{token: "rparen", regex: "[)}]"},
 				{token: "keyword", regex: "\\b(?:" + keywords + ")\\b"}
 			],
 			"comment": [
