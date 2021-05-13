@@ -127,11 +127,11 @@ class TangGenerator extends AbstractGenerator {
 		«FOR field: entity.fields»
 		
 			«generateJavaFieldValidationAnnotations(field)»
-			«generateJavaField(field)»
+			«generateJavaDTOField(field)»
 		«ENDFOR»
 
 		«FOR field: entity.fields»
-			«generateJavaGetterAndSetter(field)»
+			«generateJavaDTOGetterAndSetter(field)»
 		«ENDFOR»
 		
 		«generateJavaDTOClassEqualsMethod(entity)»
@@ -332,6 +332,39 @@ class TangGenerator extends AbstractGenerator {
 		'''
 		return result;
 	}
+
+	def generateJavaDTOField(Field field) {
+		var defaultValue = "";
+		if (field?.defaultCalculationMethod?.defaultValueConstant !== null) {
+			defaultValue = " = " + field?.defaultCalculationMethod?.defaultValueConstant;
+		} else {
+			// Read default value from fieldType
+			if (field.fieldType instanceof BasicType) {
+				val fieldType = field.fieldType as BasicType;
+				if (fieldType.extractDefaultValue !== null) {
+					defaultValue = " = " + fieldType.extractDefaultValue.toString;
+				}
+			}
+			if (field.fieldType instanceof SubType) {
+				val fieldType = field.fieldType as SubType;
+				if (fieldType.extractDefaultValue !== null) {
+					defaultValue = " = " + fieldType.extractDefaultValue.toString;
+				}
+			}
+			
+		}
+		
+		var result = 
+		'''
+			private «IF field.fieldType instanceof TangAbstractEntity»transient «ENDIF»«field.fieldType.toJavaType»«IF field.fieldType instanceof TangAbstractEntity»DTO«ENDIF» «field.name»«defaultValue»;
+			«IF field.fieldType instanceof TangAbstractEntity»
+			«val fieldType = field.fieldType as TangAbstractEntity»
+			private «fieldType.toJavaTypeOfPrimaryKey» «field.name»Id;
+			«ENDIF»
+		'''
+		return result;
+	}
+
 	def generateJavaGetterAndSetter(Field f) {
 		'''
 		
@@ -339,6 +372,23 @@ class TangGenerator extends AbstractGenerator {
 				return «f.name»;
 			}
 			public void set«f.name.toFirstUpper»(«f.fieldType.toJavaType» «f.name») {
+				this.«f.name» = «f.name»;
+			}
+		«IF f.fieldType instanceof TangAbstractEntity»
+		«val fieldType = f.fieldType as TangAbstractEntity»
+			public «fieldType.toJavaTypeOfPrimaryKey» get«f.name.toFirstUpper»Id() {
+				return «f.name»Id;
+			}
+		«ENDIF»
+		'''
+	}
+	def generateJavaDTOGetterAndSetter(Field f) {
+		'''
+		
+			public «f.fieldType.toJavaType»«IF f.fieldType instanceof TangAbstractEntity»DTO«ENDIF» get«f.name.toFirstUpper»() {
+				return «f.name»;
+			}
+			public void set«f.name.toFirstUpper»(«f.fieldType.toJavaType»«IF f.fieldType instanceof TangAbstractEntity»DTO«ENDIF» «f.name») {
 				this.«f.name» = «f.name»;
 			}
 		«IF f.fieldType instanceof TangAbstractEntity»
