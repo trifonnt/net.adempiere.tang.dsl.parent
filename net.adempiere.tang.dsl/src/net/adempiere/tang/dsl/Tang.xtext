@@ -30,6 +30,10 @@ TangModule:
 	(tangPackages+=TangPackageDeclaration)*
 ;
 
+// @Trifon
+terminal OPEN: '{';
+terminal CLOSE: '}';
+
 //terminal LONG returns ecore::ELong: ('-'|'+')? ('0'..'9')+ 'l';
 // @Trifon
 terminal LONG_OBJECT returns ecore::ELongObject: ('-'|'+')? ('0'..'9')+ 'L';
@@ -46,11 +50,11 @@ terminal BOOLEAN_OBJECT returns ecore::EBooleanObject: ('Boolean.TRUE'|'Boolean.
 //terminal BOOLEAN_DEFAULT_VALUES returns ecore::EBoolean: ('true'|'false');
 
 TangPackageDeclaration:
-	'package' name=QualifiedName '{'
+	'package' name=QualifiedName OPEN
 		imports+=TangImport*
 		defaultValueCalculatorList=TangDefaultValueCalculatorList?
 		elements+=TangAbstractElement*
-	'}'
+	CLOSE
 ;
 
 TangAbstractElement: // By this way order of Model.tangModelElements will not matter!
@@ -101,24 +105,27 @@ SubType:
 
 
 BasicStringType:
-	'string-type' name=ID '{'
+	'string-type' name=ID
+	OPEN
 		'java-type' '=' javaType=STRING
 		'db-type' '=' dbType=STRING
 		'max-length' '=' maxLength=INT 
 		('allow-null' '=' allowNull=BOOLEAN) //  '=' ('true' | 'false')
 		('default-value' '=' defaultValue=STRING)?
-	'}'
+	CLOSE
 ;
 SubStringType:
-	'sub-string-type' name=ID 'extends' superType=[BasicStringType|QualifiedName] '{'
+	'sub-string-type' name=ID 'extends' superType=[BasicStringType|QualifiedName]
+	OPEN
 		('max-length' '=' maxLength=INT)?
 		('allow-null' '=' allowNull=BOOLEAN)?
 		('default-value' '=' defaultValue=STRING)?
-	'}'
+	CLOSE
 ;
 
 BasicIntegerType:
-	'integer-type' name=ID '{'
+	'integer-type' name=ID
+	OPEN
 		'java-type' '=' javaType=STRING
 		'db-type' '=' dbType=STRING
 		'max-digits' '=' maxLength=INT 
@@ -126,20 +133,22 @@ BasicIntegerType:
 		('min-value' '=' minValue=INT)? // TODO - Allow user to enter CONSTANT --> 'Integer.MIN_VALUE'|'Integer.MAX_VALUE'|
 		('max-value' '=' maxValue=INT)? // TODO - Allow user to enter CONSTANT --> 'Integer.MIN_VALUE'|'Integer.MAX_VALUE'|
 		('default-value' '=' defaultValue=INT)?
-	'}'
+	CLOSE
 ;
 SubIntegerType:
-	'sub-integer-type' name=ID 'extends' superType=[BasicIntegerType|QualifiedName] '{'
+	'sub-integer-type' name=ID 'extends' superType=[BasicIntegerType|QualifiedName]
+	OPEN
 		('max-digits' '=' maxDigits=INT)? 
 		('allow-null' '=' allowNull=BOOLEAN)?
 		('min-value' '=' minValue=INT)? // TODO - Allow user to enter CONSTANT --> 'Integer.MIN_VALUE'|'Integer.MAX_VALUE'|
 		('max-value' '=' maxValue=INT)? // TODO - Allow user to enter CONSTANT --> 'Integer.MIN_VALUE'|'Integer.MAX_VALUE'|
 		('default-value' '=' defaultValue=INT)?
-	'}'
+	CLOSE
 ;
 
 BasicLongType:
-	'long-type' name=ID '{'
+	'long-type' name=ID
+	OPEN
 		'java-type' '=' javaType=STRING
 		'db-type' '=' dbType=STRING
 		'max-digits' '=' maxLength=INT 
@@ -147,35 +156,39 @@ BasicLongType:
 		('min-value' '=' minValue=LONG_OBJECT)?
 		('max-value' '=' maxValue=LONG_OBJECT)?
 		('default-value' '=' defaultValue=LONG_OBJECT)?
-	'}'
+	CLOSE
 ;
 SubLongType:
-	'sub-long-type' name=ID 'extends' superType=[BasicLongType|QualifiedName] '{'
+	'sub-long-type' name=ID 'extends' superType=[BasicLongType|QualifiedName]
+	OPEN
 		('max-digits' '=' maxDigits=INT)? 
 		('allow-null' '=' allowNull=BOOLEAN)?
 		('min-value' '=' minValue=LONG_OBJECT)?
 		('max-value' '=' maxValue=LONG_OBJECT)?
 		('default-value' '=' defaultValue=LONG_OBJECT)?
-	'}'
+	CLOSE
 ;
 
 BasicBooleanType:
-	'boolean-type' name=ID '{'
+	'boolean-type' name=ID
+	OPEN
 		'java-type' '=' javaType=STRING
 		'db-type' '=' dbType=STRING
 		('allow-null' '=' allowNull=BOOLEAN)
 		('default-value' '=' defaultValue=BOOLEAN)?
-	'}'
+	CLOSE
 ;
 SubBooleanType:
-	'sub-boolean-type' name=ID 'extends' superType=[BasicBooleanType|QualifiedName] '{'
+	'sub-boolean-type' name=ID 'extends' superType=[BasicBooleanType|QualifiedName]
+	OPEN
 		('allow-null' '=' allowNull=BOOLEAN)?
 		('default-value' '=' defaultValue=BOOLEAN)?
-	'}'
+	CLOSE
 ;
 
 BasicDecimalType:
-	'decimal-type' name=ID '{'
+	'decimal-type' name=ID
+	OPEN
 		'java-type' '=' javaType=STRING
 		'db-type' '=' dbType=STRING
 		'max-digits' '=' maxDigits=INT 
@@ -183,61 +196,68 @@ BasicDecimalType:
 		('min-value' '=' minValue=INT)?
 		('max-value' '=' maxValue=INT)?
 		('default-value' '=' defaultValue=INT)?
-	'}'
+	CLOSE
 ;
 SubDecimalType:
-	'sub-decimal-type' name=ID 'extends' superType=[BasicDecimalType|QualifiedName] '{'
+	'sub-decimal-type' name=ID 'extends' superType=[BasicDecimalType|QualifiedName]
+	OPEN
 		('max-digits' '=' maxDigits=INT)? 
 		('allow-null' '=' allowNull=BOOLEAN)?
 		('min-value' '=' minValue=INT)?
 		('max-value' '=' maxValue=INT)?
 		('default-value' '=' defaultValue=INT)?
-	'}'
+	CLOSE
 ;
 
 BasicDateType:
-	'date-type' name=ID '{'
+	'date-type' name=ID
+	OPEN
 		'java-type' '=' javaType=STRING
 		'db-type' '=' dbType=STRING
 		('allow-null' '=' allowNull=BOOLEAN)
 		('default-value' '=' defaultValue=STRING)?
-	'}'
+	CLOSE
 ;
 SubDateType:
-	'sub-date-type' name=ID 'extends' superType=[BasicDateType|QualifiedName] '{'
+	'sub-date-type' name=ID 'extends' superType=[BasicDateType|QualifiedName]
+	OPEN
 		('allow-null' '=' allowNull=BOOLEAN)?
 		('default-value' '=' defaultValue=STRING)?
-	'}'
+	CLOSE
 ;
 
 BasicTimeType:
-	'time-type' name=ID '{'
+	'time-type' name=ID
+	OPEN
 		'java-type' '=' javaType=STRING
 		'db-type' '=' dbType=STRING
 		('allow-null' '=' allowNull=BOOLEAN)
 		('default-value' '=' defaultValue=STRING)?
-	'}'
+	CLOSE
 ;
 SubTimeType:
-	'sub-time-type' name=ID 'extends' superType=[BasicTimeType|QualifiedName] '{'
+	'sub-time-type' name=ID 'extends' superType=[BasicTimeType|QualifiedName]
+	OPEN
 		('allow-null' '=' allowNull=BOOLEAN)?
 		('default-value' '=' defaultValue=STRING)?
-	'}'
+	CLOSE
 ;
 
 BasicDateTimeType:
-	'date-time-type' name=ID '{'
+	'date-time-type' name=ID
+	OPEN
 		'java-type' '=' javaType=STRING
 		'db-type' '=' dbType=STRING
 		('allow-null' '=' allowNull=BOOLEAN)
 		('default-value' '=' defaultValue=STRING)?
-	'}'
+	CLOSE
 ;
 SubDateTimeType:
-	'sub-date-time-type' name=ID 'extends' superType=[BasicDateTimeType|QualifiedName] '{'
+	'sub-date-time-type' name=ID 'extends' superType=[BasicDateTimeType|QualifiedName]
+	OPEN
 		(allowNull?='allow-null')? // TODO -decide this syntax or ('allow-null' '=' allowNull=BOOLEAN)?
 		('default-value' '=' defaultValue=STRING)?
-	'}'
+	CLOSE
 ;
 
 
@@ -246,7 +266,7 @@ TangEntity:
 	'entity' name=ID 
 	'db-table-name' '=' tableName=TableOrViewName
 	('extends' superEntity=[TangEntity|QualifiedName])? 
-	'{'
+	OPEN
 		fields+=Field*   // *=0..Many; +=1..Many // TODO - Decide if entity with 0 fields will be valid? If entity extends another Entity then it must be valid!
 		// Maybe if current entity extends other entity then it can have 0 fields!!!
 
@@ -254,7 +274,7 @@ TangEntity:
 		uniqueCombinations+=UniqueCombination*
 		tableIndexes+=DBTableIndex*
 		entityFinders=EntityFinders?
-	'}'
+	CLOSE
 ;
 
 TableOrViewName:
@@ -262,21 +282,31 @@ TableOrViewName:
 ;
 
 PrimaryKey:
-	'primary-key' name=ID '{' fields+=[Field] (',' fields+=[Field])* '}' // ]+ 1..MANY
+	'primary-key' name=ID
+	OPEN
+	  fields+=[Field] (',' fields+=[Field])*
+	CLOSE // ]+ 1..MANY
 ;
 
 UniqueCombination:
-	'unique-combination' name=ID '{' fields+=[Field] (',' fields+=[Field])* '}' // ]+ 1..MANY
+	'unique-combination' name=ID
+	OPEN
+		fields+=[Field] (',' fields+=[Field])*
+	CLOSE // ]+ 1..MANY
 ;
 
 DBTableIndex: // TODO: Specify type of DB Index.
-	'db-index' name=ID '{' fields+=[Field] (',' fields+=[Field])* '}' // ]+ 1..MANY
+	'db-index' name=ID
+	OPEN
+		fields+=[Field] (',' fields+=[Field])*
+	CLOSE // ]+ 1..MANY
 ;
 
 EntityFinders:
-	'finders' '{' 
+	'finders'
+	OPEN
 		finders+=AbstractEntityFinder+
- '}' // ]+ 1..MANY
+	CLOSE // ]+ 1..MANY
 ;
 AbstractEntityFinder:
 	EntityFinder | CollectionEntityFinder
@@ -309,19 +339,21 @@ DefaultCalculationMethod:
 
 //------- Entity-view-native (Definition of View is maintained with SQL Code!!!)
 TangEntityViewNative:
-	'entity-view-native' name=ID 'db-view-name' '=' dbViewName=TableOrViewName '{'
+	'entity-view-native' name=ID 'db-view-name' '=' dbViewName=TableOrViewName
+	OPEN
 		'sql' '=' sql=STRING  // TODO - This is not good as we can't refactor SQL code!!!
-	'}'
+	CLOSE
 ;
 
 
 //------- Entity-view
 TangEntityView:
-	'entity-view' name=ID 'db-view-name' '=' dbViewName=TableOrViewName '{'
-		'entities' '{' entities+=EntityViewAlias (',' entities+=EntityViewAlias)* '}'
-		'fields'   '{' fields+=EntityViewField (',' fields+=EntityViewField)* '}'
-		'where'    '{' where+=EntityViewWhere '}'
-	'}'
+	'entity-view' name=ID 'db-view-name' '=' dbViewName=TableOrViewName
+	OPEN
+		'entities' OPEN entities+=EntityViewAlias (',' entities+=EntityViewAlias)* CLOSE
+		'fields'   OPEN fields+=EntityViewField (',' fields+=EntityViewField)* CLOSE
+		'where'    OPEN where+=EntityViewWhere CLOSE
+	CLOSE
 ;
 EntityViewAlias:
 	entity=[TangEntity] ('as'|'AS') name=ID
@@ -335,9 +367,10 @@ EntityViewWhere:
 
 //------- DefaultValueCalculatorList
 TangDefaultValueCalculatorList:
-	'default-value-calculators' '{'
+	'default-value-calculators'
+	OPEN
 		defaultValueCalculators+=TangDefaultValueCalculator+
-	'}'
+	CLOSE
 ;
 TangDefaultValueCalculator:
 	name=ID 'java-class' '=' className=STRING ';'
@@ -345,9 +378,10 @@ TangDefaultValueCalculator:
 
 //------- DefaultValueCalculator[OLD VERSION]
 TangDefaultValueCalculatorOld:
-	'default-value-calculator' name=ID '{'
+	'default-value-calculator' name=ID
+	OPEN
 		'java-class' '=' className=STRING
-	'}'
+	CLOSE
 ;
 
 //------- Window
@@ -355,9 +389,9 @@ TangWindow:
 	'window' name=ID
 	'human-name' '=' humanName=STRING
 	('description' '=' description=STRING)?
-	'{'
+	OPEN
 		tabs+=Tab+
-	'}'
+	CLOSE
 ;
 
 Tab:
@@ -365,10 +399,10 @@ Tab:
 	'human-name' '=' humanName=STRING 
 	'entity-ref' '=' entity=[TangAbstractEntity|QualifiedName] 
 	('level' '=' level=INT)?
-	'{'
+	OPEN
 		tabElements+=TabAbstractElement+
 //		tabFields+=TabField+
-	'}'
+	CLOSE
 ;
 
 TabAbstractElement:
